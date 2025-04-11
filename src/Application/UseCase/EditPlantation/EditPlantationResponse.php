@@ -5,7 +5,8 @@ namespace App\Application\UseCase\CreatePlantation;
 class EditPlantationResponse
 {
     public function __construct(
-        public int $id
+        public int $id,
+        public string $name,
     ) {
     }
 }

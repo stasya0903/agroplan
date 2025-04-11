@@ -11,5 +11,4 @@ interface PlantationRepositoryInterface
 
     public function existsByName(string $name): bool;
 
-    public function findById(int $id);
 }

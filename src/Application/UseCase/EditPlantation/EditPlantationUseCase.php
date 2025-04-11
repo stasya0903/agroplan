@@ -9,29 +9,28 @@ use App\Domain\ValueObject\PlantationName;
 class EditPlantationUseCase
 {
     public function __construct(
-        private readonly PlantationFactoryInterface $factory,
         private readonly PlantationRepositoryInterface $plantationRepository
     ) {
     }
 
     public function __invoke(EditPlantationRequest $request): EditPlantationResponse
     {
-        $plantation = $this->plantationRepository->findById($request->id);
+        $plantation = $this->plantationRepository->find($request->id);
 
         if (!$plantation) {
             throw new \DomainException('Plantation not found.');
         }
 
         if (
-            $this->repository->existsByName($request->name) &&
+            $this->plantationRepository->existsByName($request->name) &&
             $request->name !== $plantation->getName()
         ) {
             throw new \DomainException('Plantation name must be unique.');
         }
 
         $plantation->rename(new PlantationName($request->name));
-        $this->repository->save($plantation);
+        $this->plantationRepository->save($plantation);
 
-        return new EditPlantationResponse($plantation->getId());
+        return new EditPlantationResponse($plantation->getId(), $plantation->getName());
     }
 }
