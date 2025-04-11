@@ -9,7 +9,7 @@ use App\Domain\ValueObject\PlantationName;
 class CreatePlantationUseCase
 {
     public function __construct(
-        private readonly PlantationFactoryInterface    $factory,
+        private readonly PlantationFactoryInterface $factory,
         private readonly PlantationRepositoryInterface $plantationRepository
 
     )

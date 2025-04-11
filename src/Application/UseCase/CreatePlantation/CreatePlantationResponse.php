@@ -8,5 +8,4 @@ class CreatePlantationResponse
         public int $id
     ) {
     }
-
 }

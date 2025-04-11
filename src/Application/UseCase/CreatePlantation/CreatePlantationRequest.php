@@ -8,5 +8,4 @@ class CreatePlantationRequest
         public readonly string $name
     ) {
     }
-
 }
