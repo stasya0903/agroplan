@@ -14,14 +14,24 @@ class EditPlantationUseCase
     ) {
     }
 
-    public function __invoke(CreatePlantationRequest $request): EditPlantationResponse
+    public function __invoke(EditPlantationRequest $request): EditPlantationResponse
     {
-        if ($this->plantationRepository->existsByName($request->name)) {
+        $plantation = $this->plantationRepository->findById($request->id);
+
+        if (!$plantation) {
+            throw new \DomainException('Plantation not found.');
+        }
+
+        if (
+            $this->repository->existsByName($request->name) &&
+            $request->name !== $plantation->getName()
+        ) {
             throw new \DomainException('Plantation name must be unique.');
         }
 
-        $plantation = $this->factory->create(new PlantationName($request->name));
-        $this->plantationRepository->save($plantation);
+        $plantation->rename(new PlantationName($request->name));
+        $this->repository->save($plantation);
+
         return new EditPlantationResponse($plantation->getId());
     }
 }

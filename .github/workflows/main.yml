@@ -87,24 +87,20 @@ jobs:
           extensions: mbstring, intl, pdo, pdo_pgsql
           ini-values: post_max_size=256M, upload_max_filesize=256M
 
-      # Start all services in background
-      - name: Start services
-        run: docker-compose up -d
-
-      # Wait for database to be ready
-
         # Install Composer dependencies
       - name: Install Composer dependencies
         run: |
           curl -sS https://getcomposer.org/installer | php
           php composer.phar install --no-interaction
 
-      # Run the tests
-      - name: Run Symfony tests
+      - name: Set up test DB
         run: |
-          docker-compose run --rm app php bin/console doctrine:database:create --env=test  # Create test DB
-          docker-compose run --rm app php bin/console doctrine:schema:update --force --env=test  # Update schema
-          docker-compose run --rm app php bin/phpunit  # Run PHPUnit tests
+          php bin/console doctrine:database:create --env=test
+          php bin/console doctrine:schema:update --force --env=test
+
+      - name: Run PHPUnit
+        run: |
+          php bin/phpunit
 
       # Optionally, you can clean up the containers after running tests
       - name: Cleanup

@@ -10,4 +10,6 @@ interface PlantationRepositoryInterface
     public function save(Plantation $plantation): void;
 
     public function existsByName(string $name): bool;
+
+    public function findById(int $id);
 }
