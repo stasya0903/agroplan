@@ -11,9 +11,7 @@ class CreatePlantationUseCase
     public function __construct(
         private readonly PlantationFactoryInterface $factory,
         private readonly PlantationRepositoryInterface $plantationRepository
-
-    )
-    {
+    ) {
     }
 
     public function __invoke(CreatePlantationRequest $request): CreatePlantationResponse
@@ -26,5 +24,4 @@ class CreatePlantationUseCase
         $this->plantationRepository->save($plantation);
         return new CreatePlantationResponse($plantation->getId());
     }
-
 }

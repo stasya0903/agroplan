@@ -9,10 +9,8 @@ class Plantation
     private ?int $id = null;
 
     public function __construct(
-        private PlantationName $name
-    )
-    {
-
+        private readonly PlantationName $name
+    ) {
     }
 
     public function getId(): ?int
