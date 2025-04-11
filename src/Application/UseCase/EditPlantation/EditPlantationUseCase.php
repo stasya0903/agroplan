@@ -6,7 +6,7 @@ use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\ValueObject\PlantationName;
 
-class CreatePlantationUseCase
+class EditPlantationUseCase
 {
     public function __construct(
         private readonly PlantationFactoryInterface $factory,

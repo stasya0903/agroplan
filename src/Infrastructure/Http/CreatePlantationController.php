@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use App\Application\UseCase\CreatePlantation\CreatePlantationRequest;
-use App\Application\UseCase\CreatePlantation\CreatePlantationUseCase;
+use App\Application\UseCase\CreatePlantation\EditPlantationUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 final class CreatePlantationController extends AbstractController
 {
     public function __construct(
-        private readonly CreatePlantationUseCase $useCase,
+        private readonly EditPlantationUseCase $useCase,
     ) {
     }
 
