@@ -47,7 +47,7 @@ class EditPlantationTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
         $plantation = $this->repository->find($this->existingPlantation->getId());
-        $this->assertEquals('New Plantation', $plantation->getName());
+        $this->assertEquals('New Plantation', $plantation->getName()->getValue());
     }
 
     #[Test]

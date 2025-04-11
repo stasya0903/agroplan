@@ -6,7 +6,6 @@ namespace App\Infrastructure\Http;
 
 use App\Application\UseCase\CreatePlantation\CreatePlantationRequest;
 use App\Application\UseCase\CreatePlantation\CreatePlantationUseCase;
-use App\Application\UseCase\CreatePlantation\EditPlantationUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;

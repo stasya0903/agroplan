@@ -36,15 +36,21 @@ class PlantationRepository implements PlantationRepositoryInterface
 
     private function mapToDomain(PlantationEntity $entity): Plantation
     {
-        return new Plantation(new PlantationName($entity->getName()));
+        $plantation = new Plantation(new PlantationName($entity->getName()));
+        $reflectionProperty = new \ReflectionProperty(Plantation::class, 'id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($plantation, $entity->getId());
+        return $plantation;
     }
 
     private function mapToEntity(Plantation $plantation): PlantationEntity
     {
-        $existing = $this->em
-            ->getRepository(PlantationEntity::class)
-            ->findOneBy(['name' => $plantation->getName()->getValue()]);
-
+        $id = $plantation->getId();
+        if($id){
+            $existing = $this->em
+                ->getRepository(PlantationEntity::class)
+                ->findOneBy(['id' => $plantation->getId()]);
+        }
         $entity = $existing ?? new PlantationEntity($plantation->getName()->getValue());
         $entity->setName($plantation->getName()->getValue());
         return $entity;
