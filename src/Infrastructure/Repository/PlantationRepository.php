@@ -10,13 +10,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PlantationRepository implements PlantationRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     public function find(int $id): ?Plantation
     {
         $entity = $this->em->getRepository(PlantationEntity::class)->find($id);
-        if (!$entity) return null;
-
+        if (!$entity) {
+            return null;
+        }
         return $this->mapToDomain($entity);
     }
 
