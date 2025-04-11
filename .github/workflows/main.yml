@@ -2,33 +2,32 @@ name: "CI"
 
 on:
   pull_request:
+    branches:
+      - master  # Trigger on PRs targeting master
     paths:
       - "**.php"
       - "phpcs.xml"
       - ".github/workflows/phpcs.yml"
-    branches:
-      - master
-      
+
 jobs:
   phpcs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # important!
+          fetch-depth: 0  # important!
 
-      # we may use whatever way to install phpcs, just specify the path on the next step
-      # however, curl seems to be the fastest
       - name: Install PHP_CodeSniffer
         run: |
           curl -OL https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
           php phpcs.phar --version
+
       - uses: tinovyatkin/action-php-codesniffer@v1
         with:
-          files: "**.php" # you may customize glob as needed
+          files: "**.php"  # You can customize this glob to fit your repo structure
           phpcs_path: php phpcs.phar
           standard: phpcs.xml
-  # Job to build and test the Docker containers
+
   build_and_test:
     runs-on: ubuntu-latest
     services:
@@ -55,12 +54,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Cache Docker layers to speed up the build
+      # Cache Docker layers
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
@@ -73,8 +72,8 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.0  # Adjust to your PHP version
-          extensions: mbstring, intl, pdo, pdo_pgsql  # Add any other necessary extensions
+          php-version: 8.0
+          extensions: mbstring, intl, pdo, pdo_pgsql
           ini-values: post_max_size=256M, upload_max_filesize=256M
 
       # Install Composer dependencies
