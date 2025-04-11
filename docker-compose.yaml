@@ -30,6 +30,24 @@ services:
       - ./:/data/agroplan
     networks:
       - app-network
+
+  # PostgreSQL for testing
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+
+volumes:
+  db_data:
 networks:
   app-network:
     driver: bridge

@@ -26,3 +26,69 @@ jobs:
           files: "**.php" # you may customize glob as needed
           phpcs_path: php phpcs.phar
           standard: phpcs.xml
+  # Job to build and test the Docker containers
+  build_and_test:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test_user"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Cache Docker layers to speed up the build
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # Build the Docker images
+      - name: Build Docker images
+        run: |
+          docker-compose -f docker-compose.yml build
+
+      # Set up PHP environment and install dependencies
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.0  # Adjust to your PHP version
+          extensions: mbstring, intl, pdo, pdo_pgsql  # Add any other necessary extensions
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+
+      # Install Composer dependencies
+      - name: Install Composer dependencies
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          php composer.phar install --no-interaction
+
+      # Run the tests
+      - name: Run Symfony tests
+        run: |
+          docker-compose run --rm app php bin/console doctrine:database:create --env=test  # Create test DB
+          docker-compose run --rm app php bin/console doctrine:schema:update --force --env=test  # Update schema
+          docker-compose run --rm app php bin/phpunit  # Run PHPUnit tests
+
+      # Optionally, you can clean up the containers after running tests
+      - name: Cleanup
+        run: |
+          docker-compose down
