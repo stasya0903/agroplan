@@ -88,11 +88,20 @@ jobs:
           extensions: mbstring, intl, pdo, pdo_pgsql
           ini-values: post_max_size=256M, upload_max_filesize=256M
 
-      # Install Composer dependencies
-      - name: Install Composer dependencies
+      # Start all services in background
+      - name: Start services
+        run: docker-compose up -d
+
+      # Wait for database to be ready
+      - name: Wait for PostgreSQL
         run: |
-          curl -sS https://getcomposer.org/installer | php
-          php composer.phar install --no-interaction
+          curl -sS https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh -o wait-for-it.sh
+          chmod +x wait-for-it.sh
+          ./wait-for-it.sh db:5432 --timeout=60 --strict -- echo "PostgreSQL is up"
+
+      # Install Composer dependencies inside the app container
+      - name: Install Composer inside container
+        run: docker-compose exec -T app php composer.phar install --no-interaction
 
       # Run the tests
       - name: Run Symfony tests
