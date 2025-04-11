@@ -6,6 +6,8 @@ on:
       - "**.php"
       - "phpcs.xml"
       - ".github/workflows/phpcs.yml"
+    branches:
+      - master
       
 jobs:
   phpcs:
