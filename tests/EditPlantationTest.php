@@ -25,14 +25,14 @@ class EditPlantationTest extends WebTestCase
             PlantationRepositoryInterface::class
         );
         $this->truncateTables(['plantations']);
+        $this->existingPlantation = new Plantation(new PlantationName('Existing Plantation'));
+        $this->repository->save($this->existingPlantation);
     }
     #[Test]
     public function testEditPlantationSuccess(): void
     {
-        $existingPlantation = new Plantation(new PlantationName('Existing Plantation'));
-        $this->repository->save($existingPlantation);
         $data = [
-            'id' => $existingPlantation->getId(),
+            'id' => $this->existingPlantation->getId(),
             'name' => 'New Plantation'
         ];
 
@@ -54,6 +54,7 @@ class EditPlantationTest extends WebTestCase
     public function testEditPlantationWithEmptyName(): void
     {
         $data = [
+            'id' => $this->existingPlantation->getId(),
             'name' => ''
         ];
 
