@@ -12,6 +12,7 @@
 ###< symfony/framework-bundle ###
 /docker/dbdata
 /.env
+/.env.test
 
 ###> phpunit/phpunit ###
 /phpunit.xml
