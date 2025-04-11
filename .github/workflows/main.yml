@@ -93,9 +93,11 @@ jobs:
 
       # Wait for database to be ready
 
-      # Install Composer dependencies inside the app container
-      - name: Install Composer inside container
-        run: docker-compose exec -T app php composer.phar install --no-interaction
+        # Install Composer dependencies
+      - name: Install Composer dependencies
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          php composer.phar install --no-interaction
 
       # Run the tests
       - name: Run Symfony tests
