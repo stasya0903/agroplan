@@ -23,5 +23,4 @@ class PlantationName
             throw new \InvalidArgumentException('Name cannot be empty');
         }
     }
-
 }

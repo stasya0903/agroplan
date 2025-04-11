@@ -52,8 +52,8 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "APP_ENV=test" > .env
-          echo "DATABASE_URL=postgresql://test_user:test_password@localhost:5432/test_db" >> .env
+           echo "APP_ENV=test" > .env
+           echo "DATABASE_URL=postgresql://test_user:test_password@db:5432/test_db?serverVersion=14.6&charset=utf8" >> .env
 
       # Set up Docker Buildx
       - name: Set up Docker Buildx

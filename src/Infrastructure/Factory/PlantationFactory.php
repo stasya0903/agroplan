@@ -10,9 +10,7 @@ class PlantationFactory implements PlantationFactoryInterface
 {
     public function create(
         PlantationName $name,
-    ): Plantation
-    {
+    ): Plantation {
         return new Plantation($name);
     }
-
 }

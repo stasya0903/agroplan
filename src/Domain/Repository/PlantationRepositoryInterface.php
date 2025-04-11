@@ -10,5 +10,4 @@ interface PlantationRepositoryInterface
     public function save(Plantation $plantation): void;
 
     public function existsByName(string $name): bool;
-
 }
