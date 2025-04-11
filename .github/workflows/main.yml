@@ -49,10 +49,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up environment variables
+      - name: Set up test environment
         run: |
-           echo "APP_ENV=test" > .env
-           echo "DATABASE_URL=postgresql://test_user:test_password@db:5432/test_db?serverVersion=14.6&charset=utf8" >> .env
+          echo "APP_ENV=test" > .env
+          echo "DATABASE_URL=postgresql://test_user:test_password@db:5432/test_db?serverVersion=14&charset=utf8" > .env.test.local
 
       # Set up Docker Buildx
       - name: Set up Docker Buildx
