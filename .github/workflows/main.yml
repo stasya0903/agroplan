@@ -73,7 +73,7 @@ jobs:
       # Build the Docker images
       - name: Build Docker images
         run: |
-          docker-compose -f docker-compose.yml build
+          docker-compose -f docker-compose.yaml build
 
       # Set up PHP environment and install dependencies
       - name: Set up PHP
