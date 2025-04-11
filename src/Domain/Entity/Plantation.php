@@ -9,7 +9,7 @@ class Plantation
     private ?int $id = null;
 
     public function __construct(
-        private readonly PlantationName $name
+        private  PlantationName $name
     ) {
     }
 
@@ -21,5 +21,10 @@ class Plantation
     public function getName(): PlantationName
     {
         return $this->name;
+    }
+
+    public function rename(PlantationName $newName): void
+    {
+        $this->name = $newName;
     }
 }

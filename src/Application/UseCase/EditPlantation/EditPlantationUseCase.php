@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Application\UseCase\CreatePlantation;
+namespace App\Application\UseCase\EditPlantation;
 
-use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\ValueObject\PlantationName;
 
@@ -31,6 +30,6 @@ class EditPlantationUseCase
         $plantation->rename(new PlantationName($request->name));
         $this->plantationRepository->save($plantation);
 
-        return new EditPlantationResponse($plantation->getId(), $plantation->getName());
+        return new EditPlantationResponse($plantation->getId(), $plantation->getName()->getValue());
     }
 }

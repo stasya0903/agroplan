@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\UseCase\CreatePlantation;
+namespace App\Application\UseCase\EditPlantation;
 
 class EditPlantationRequest
 {

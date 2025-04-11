@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
-use App\Application\UseCase\CreatePlantation\CreatePlantationRequest;
-use App\Application\UseCase\CreatePlantation\EditPlantationRequest;
-use App\Application\UseCase\CreatePlantation\EditPlantationUseCase;
+use App\Application\UseCase\EditPlantation\EditPlantationRequest;
+use App\Application\UseCase\EditPlantation\EditPlantationUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
