@@ -5,7 +5,7 @@ namespace App\Tests;
 use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -33,7 +33,7 @@ class GetWorkerListTest extends WebTestCase
         foreach ($workerNames as $existingWorker) {
             $this->repository->save(
                 new Worker(
-                    new WorkerName($existingWorker),
+                    new Name($existingWorker),
                     Money::fromFloat(350.00)
                 )
             );
@@ -66,7 +66,7 @@ class GetWorkerListTest extends WebTestCase
         $ids = [];
         foreach ($workerNames as $existingWorker) {
             $worker = new Worker(
-                new WorkerName($existingWorker),
+                new Name($existingWorker),
                 Money::fromFloat(350.00)
             );
             $this->repository->save($worker);

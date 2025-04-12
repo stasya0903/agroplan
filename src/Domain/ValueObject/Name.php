@@ -2,7 +2,7 @@
 
 namespace App\Domain\ValueObject;
 
-class WorkerName
+class Name
 {
     private string $value;
 

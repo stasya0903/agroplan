@@ -4,7 +4,7 @@ namespace App\Application\UseCase\EditWorker;
 
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 
 class EditWorkerUseCase
 {
@@ -28,7 +28,7 @@ class EditWorkerUseCase
             throw new \DomainException('Worker name must be unique.');
         }
 
-        $worker->rename(new WorkerName($request->name));
+        $worker->rename(new Name($request->name));
         $worker->setDailyRate(Money::fromFloat($request->dailyRate));
         $this->workerRepository->save($worker);
 

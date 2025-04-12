@@ -2,8 +2,9 @@
 
 namespace App\Tests;
 
-use App\Domain\Entity\Worker;
-use App\Domain\Repository\WorkerRepositoryInterface;
+use App\Domain\Entity\WorkType;
+use App\Domain\Repository\WorkTypeRepositoryInterface;
+use App\Domain\SystemWorkType;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
@@ -11,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateWorkerTest extends WebTestCase
+class CreateWorkListTest extends WebTestCase
 {
     use TableResetTrait;
 
@@ -22,21 +23,20 @@ class CreateWorkerTest extends WebTestCase
     {
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get(
-            WorkerRepositoryInterface::class
+            WorkTypeRepositoryInterface::class
         );
-        $this->truncateTables(['workers']);
+        $this->truncateTables(['work_types']);
     }
     #[Test]
-    public function testCreateWorkerSuccess(): void
+    public function testCreateWorkTypeSuccess(): void
     {
         $data = [
-            'name' => 'New Worker',
-            'dailyRate' => 350.00
+            'name' => 'New WorkType'
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/worker/add',
+            '/api/v1/work_type/add',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -44,21 +44,20 @@ class CreateWorkerTest extends WebTestCase
         );
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $worker = $this->repository->existsByName($data['name']);
-        $this->assertNotNull($worker);
+        $workType = $this->repository->existsByName($data['name']);
+        $this->assertNotNull($workType);
     }
 
     #[Test]
-    public function testCreateWorkerWithEmptyName(): void
+    public function testCreateWorkTypeWithEmptyName(): void
     {
         $data = [
-            'name' => '',
-            'dailyRate' => 350.00
+            'name' => ''
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/worker/add',
+            '/api/v1/work_type/add',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -72,22 +71,20 @@ class CreateWorkerTest extends WebTestCase
     }
 
     #[Test]
-    public function testCreateWorkerWithDuplicateName(): void
+    public function testCreateWorkTypeWithDuplicateName(): void
     {
-        $existingWorker = new Worker(
-            new Name('Existing Worker'),
-            new Money(35000)
+        $existingWorkType = new WorkType(
+            new Name('Existing WorkType')
         );
-        $this->repository->save($existingWorker);
+        $this->repository->save($existingWorkType);
 
         $data = [
-            'name' => 'Existing Worker',
-            'dailyRate' => 350.00
+            'name' => 'Existing WorkType'
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/worker/add',
+            '/api/v1/work_type/add',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -98,19 +95,18 @@ class CreateWorkerTest extends WebTestCase
         $response = $this->client->getResponse();
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
-        $this->assertEquals('Worker name must be unique.', $content['message']);
+        $this->assertEquals('WorkType name must be unique.', $content['message']);
     }
 
-    public function testCreateWorkerWithZeroRate(): void
+    public function testCreateWorkTypeWithSystemName(): void
     {
         $data = [
-            'name' => 'Unpaid worker',
-            'dailyRate' => 0.00
+            'name' => SystemWorkType::OTHER->label()
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/worker/add',
+            '/api/v1/work_type/add',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -121,29 +117,6 @@ class CreateWorkerTest extends WebTestCase
         $response = $this->client->getResponse();
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
-        $this->assertEquals('Amount cannot be empty', $content['message']);
-    }
-
-    public function testCreateWorkerWithNegativeRate(): void
-    {
-        $data = [
-            'name' => 'Unpaid worker',
-            'dailyRate' => -350.00
-        ];
-
-        $this->client->request(
-            'POST',
-            '/api/v1/worker/add',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($data)
-        );
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        $response = $this->client->getResponse();
-        $content = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('message', $content);
-        $this->assertEquals('Amount must be greater than zero.', $content['message']);
+        $this->assertEquals('WorkType name used by system.', $content['message']);
     }
 }

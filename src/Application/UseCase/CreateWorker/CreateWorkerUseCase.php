@@ -8,7 +8,7 @@ use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\PlantationName;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 
 class CreateWorkerUseCase
 {
@@ -24,7 +24,7 @@ class CreateWorkerUseCase
             throw new \DomainException('Worker name must be unique.');
         }
         $money = Money::fromFloat($request->dailyRate);
-        $worker = $this->factory->create(new WorkerName($request->name), $money);
+        $worker = $this->factory->create(new Name($request->name), $money);
         $this->repository->save($worker);
 
         return new CreateWorkerResponse($worker->getId());

@@ -5,7 +5,7 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 use App\Infrastructure\Entity\PlantationEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,7 +38,7 @@ class WorkerRepository implements WorkerRepositoryInterface
 
     private function mapToDomain(WorkerEntity $entity): Worker
     {
-        $worker = new Worker(new WorkerName($entity->getName()), new Money($entity->getDailyRateInCents()));
+        $worker = new Worker(new Name($entity->getName()), new Money($entity->getDailyRateInCents()));
         $reflectionProperty = new \ReflectionProperty(Worker::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($worker, $entity->getId());

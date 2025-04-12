@@ -7,7 +7,7 @@ use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\PlantationName;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -28,7 +28,7 @@ class EditWorkerTest extends WebTestCase
         );
         $this->truncateTables(['workers']);
         $this->existingWorker = new Worker(
-            new WorkerName('initial worker'),
+            new Name('initial worker'),
             Money::fromFloat(350.00)
         );
         $this->repository->save($this->existingWorker);
@@ -86,7 +86,7 @@ class EditWorkerTest extends WebTestCase
     public function testEditWorkerWithDuplicateName(): void
     {
         $existingWorker = new Worker(
-            new WorkerName('Existing Worker'),
+            new Name('Existing Worker'),
             new Money(35000)
         );
         $this->repository->save($existingWorker);

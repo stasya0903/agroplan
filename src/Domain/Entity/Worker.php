@@ -3,21 +3,19 @@
 namespace App\Domain\Entity;
 
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\WorkerName;
+use App\Domain\ValueObject\Name;
 
 class Worker
 {
     private ?int $id = null;
 
-
-
     public function __construct(
-        private WorkerName $name,
+        private Name  $name,
         private Money $dailyRate
     ) {
     }
 
-    public function getName(): WorkerName
+    public function getName(): Name
     {
         return $this->name;
     }
@@ -32,7 +30,7 @@ class Worker
         return $this->id;
     }
 
-    public function rename(WorkerName $param): void
+    public function rename(Name $param): void
     {
         $this->name = $param;
     }
