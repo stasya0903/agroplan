@@ -10,7 +10,7 @@ class GetPlantationListUseCase
 {
     public function __construct(
         private readonly PlantationRepository $plantationRepository
-    ){
+    ) {
     }
 
     public function __invoke(GetPlantationListRequest $request): GetPlantationListResponse

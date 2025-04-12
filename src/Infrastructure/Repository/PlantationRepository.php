@@ -72,7 +72,6 @@ class PlantationRepository implements PlantationRepositoryInterface
             $query = $query
                 ->andWhere('plantation.id IN (:ids)')
                 ->setParameter('ids', $ids);
-
         }
         $items =  $query->getQuery()->getResult();
         $plantations = [];

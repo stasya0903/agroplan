@@ -8,5 +8,4 @@ class GetPlantationListRequest
         public ?array $ids = []
     ) {
     }
-
 }

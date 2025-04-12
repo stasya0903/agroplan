@@ -9,6 +9,4 @@ class PlantationDTO
         public string $name
     ) {
     }
-
-
 }

@@ -36,7 +36,6 @@ final class GetPlantationListController extends AbstractController
         ValidatorInterface $validator
     ): Response
     {
-
         try {
             $errors = $validator->validate($httpRequest);
             if (count($errors) > 0) {

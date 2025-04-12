@@ -17,5 +17,4 @@ class HttpGetPlantationListRequest
     {
         return new GetPlantationListRequest($this->ids ?? []);
     }
-
 }

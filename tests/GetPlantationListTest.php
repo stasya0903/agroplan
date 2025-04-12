@@ -25,14 +25,13 @@ class GetPlantationListTest extends WebTestCase
             PlantationRepositoryInterface::class
         );
         $this->truncateTables(['plantations']);
-
     }
     #[Test]
     public function testGetAllPlantationsSuccess(): void
     {
         $plantationNames = ['first Plantation', 'second Plantation'];
         foreach ($plantationNames as $existingPlantation) {
-           $this->repository->save(new Plantation(new PlantationName($existingPlantation)));
+            $this->repository->save(new Plantation(new PlantationName($existingPlantation)));
         }
         $data = [
             'ids' => null,
