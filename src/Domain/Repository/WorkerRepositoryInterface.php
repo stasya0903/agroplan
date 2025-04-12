@@ -10,4 +10,5 @@ interface WorkerRepositoryInterface
     public function find(int $id): ?Worker;
     public function save(Worker $plantation): void;
     public function existsByName(string $name): bool;
+    public function getList(array $ids): array;
 }

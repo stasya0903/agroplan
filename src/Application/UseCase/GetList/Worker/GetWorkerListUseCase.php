@@ -3,25 +3,29 @@
 namespace App\Application\UseCase\GetList\Worker;
 
 use App\Application\DTO\PlantationDTO;
+use App\Application\DTO\WorkerDTO;
 use App\Application\UseCase\GetList\Plantation\GetPlantationListRequest;
 use App\Application\UseCase\GetList\Plantation\GetPlantationListResponse;
 use App\Domain\Entity\Plantation;
+use App\Domain\Entity\Worker;
+use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Infrastructure\Repository\PlantationRepository;
 
 class GetWorkerListUseCase
 {
     public function __construct(
-        private readonly PlantationRepository $plantationRepository
+        private readonly WorkerRepositoryInterface $workerRepository
     ) {
     }
 
-    public function __invoke(GetPlantationListRequest $request): GetPlantationListResponse
+    public function __invoke(GetWorkerListRequest $request): GetWorkerListResponse
     {
-        $list = $this->plantationRepository->getList($request->ids ?? []);
-        $plantations = array_map(fn(Plantation $plantation) => new PlantationDTO(
-            $plantation->getId(),
-            $plantation->getName()->getValue()
+        $list = $this->workerRepository->getList($request->ids ?? []);
+        $workers = array_map(fn(Worker $worker) => new WorkerDTO(
+            $worker->getId(),
+            $worker->getName()->getValue(),
+            $worker->getDailyRate()->getAmountAsFloat()
         ), $list);
-        return new GetPlantationListResponse($plantations);
+        return new GetWorkerListResponse($workers);
     }
 }

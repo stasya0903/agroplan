@@ -4,12 +4,13 @@ namespace App\Application\UseCase\GetList\Plantation;
 
 use App\Application\DTO\PlantationDTO;
 use App\Domain\Entity\Plantation;
+use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Infrastructure\Repository\PlantationRepository;
 
 class GetPlantationListUseCase
 {
     public function __construct(
-        private readonly PlantationRepository $plantationRepository
+        private readonly PlantationRepositoryInterface $plantationRepository
     ) {
     }
 
