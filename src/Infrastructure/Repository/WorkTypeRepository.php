@@ -28,7 +28,6 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
     public function save(WorkType $workType): void
     {
         $entity = $this->mapToEntity($workType);
-
         $this->em->persist($entity);
         $this->em->flush();
         $reflectionProperty = new \ReflectionProperty(WorkType::class, 'id');
@@ -54,7 +53,9 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
         $name = $workType->getName()->getValue();
         $isSystem = $workType->isSystem();
         if ($id) {
-            $entity = $this->em->getRepository(WorkTypeEntity::class)->findOneBy(['id' => $workType->getId()]);
+            $entity = $this->em->getRepository(WorkTypeEntity::class)
+                ->findOneBy(['id' => $workType->getId()]) ?? new WorkTypeEntity($name, $isSystem);
+            $entity->setId($id);
             $entity->setName($name);
             $entity->setIsSystem($isSystem);
         } else {

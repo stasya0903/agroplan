@@ -10,10 +10,9 @@ class WorkType
     private ?int $id = null;
 
     public function __construct(
-        public readonly Name $name,
+        public Name $name,
         public readonly bool $isSystem = false,
     ) {
-
     }
 
     public function getId(): ?int
@@ -29,5 +28,9 @@ class WorkType
     public function isSystem(): bool
     {
         return $this->id && SystemWorkType::isSystemId($this->id);
+    }
+    public function rename(Name $param): void
+    {
+        $this->name = $param;
     }
 }
