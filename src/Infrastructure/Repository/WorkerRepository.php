@@ -6,6 +6,7 @@ use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\WorkerName;
+use App\Infrastructure\Entity\PlantationEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -63,5 +64,23 @@ class WorkerRepository implements WorkerRepositoryInterface
         $repository = $this->em->getRepository(WorkerEntity::class);
         $entity = $repository->findOneBy(['name' => $name]);
         return $entity !== null;
+    }
+
+    public function getList(array $ids = []): array
+    {
+        $query = $this->em->createQueryBuilder()
+            ->select('worker')
+            ->from(WorkerEntity::class, 'worker');
+        if (count($ids) > 0) {
+            $query = $query
+                ->andWhere('worker.id IN (:ids)')
+                ->setParameter('ids', $ids);
+        }
+        $items =  $query->getQuery()->getResult();
+        $workers = [];
+        foreach ($items as $item) {
+            $workers[] = $this->mapToDomain($item);
+        }
+        return $workers;
     }
 }
