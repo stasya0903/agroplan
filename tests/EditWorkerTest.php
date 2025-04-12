@@ -160,4 +160,27 @@ class EditWorkerTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Amount must be greater than zero.', $content['message']);
     }
+    public function testEditNotExistingWorker(): void
+    {
+        $data = [
+            'id' => 999,
+            'name' => 'Goast worker',
+            'dailyRate' => -350.00
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/worker/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Worker not found.', $content['message']);
+    }
+
 }
