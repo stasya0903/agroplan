@@ -31,7 +31,8 @@ class GetWorkerListTest extends WebTestCase
     {
         $workerNames = ['first Worker', 'second Worker'];
         foreach ($workerNames as $existingWorker) {
-            $this->repository->save(new Worker(
+            $this->repository->save(
+                new Worker(
                     new WorkerName($existingWorker),
                     Money::fromFloat(350.00)
                 )
