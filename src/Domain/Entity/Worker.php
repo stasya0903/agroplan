@@ -31,4 +31,14 @@ class Worker
     {
         return $this->id;
     }
+
+    public function rename(WorkerName $param): void
+    {
+        $this->name = $param;
+    }
+
+    public function setDailyRate(Money $dailyRate): void
+    {
+        $this->dailyRate = $dailyRate;
+    }
 }

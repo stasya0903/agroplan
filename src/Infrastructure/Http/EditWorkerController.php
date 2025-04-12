@@ -6,6 +6,8 @@ namespace App\Infrastructure\Http;
 
 use App\Application\UseCase\CreateWorker\CreateWorkerRequest;
 use App\Application\UseCase\CreateWorker\CreateWorkerUseCase;
+use App\Application\UseCase\EditWorker\EditWorkerRequest;
+use App\Application\UseCase\EditWorker\EditWorkerUseCase;
 use App\Infrastructure\Http\Request\HttpCreateWorkerRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,19 +17,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route(
-    '/api/v1/worker/add',
-    name: 'worker_add',
+    '/api/v1/worker/edit',
+    name: 'worker_edit',
     methods: ['POST']
 )]
-final class CreateWorkerController extends AbstractController
+final class EditWorkerController extends AbstractController
 {
     public function __construct(
-        private readonly CreateWorkerUseCase $useCase,
-        private readonly ValidatorInterface $validator,
+        private readonly EditWorkerUseCase $useCase
     ) {
     }
 
-    public function __invoke(#[MapRequestPayload] CreateWorkerRequest $request): Response
+    public function __invoke(#[MapRequestPayload] EditWorkerRequest $request): Response
     {
         try {
             $response = ($this->useCase)($request);
