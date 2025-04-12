@@ -16,8 +16,7 @@ class SeedSystemWorkTypesCommand extends Command
 {
     public function __construct(
         private readonly WorkTypeRepositoryInterface $workTypeRepository
-    )
-    {
+    ) {
         parent::__construct();
     }
 
