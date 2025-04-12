@@ -172,6 +172,6 @@ class EditWorkTypeTest extends WebTestCase
         $response = $this->client->getResponse();
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
-        $this->assertEquals('Can not edit system work type.', $content['message']);
+        $this->assertEquals('Can not edit system work type', $content['message']);
     }
 }
