@@ -9,4 +9,5 @@ interface PlantationRepositoryInterface
     public function find(int $id): ?Plantation;
     public function save(Plantation $plantation): void;
     public function existsByName(string $name): bool;
+    public function getList(array $ids): array;
 }

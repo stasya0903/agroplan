@@ -55,10 +55,30 @@ class PlantationRepository implements PlantationRepositoryInterface
         $entity->setName($plantation->getName()->getValue());
         return $entity;
     }
+
     public function existsByName(string $name): bool
     {
         $repository = $this->em->getRepository(PlantationEntity::class);
         $entity = $repository->findOneBy(['name' => $name]);
         return $entity !== null;
+    }
+
+    public function getList(array $ids = []): array
+    {
+        $query = $this->em->createQueryBuilder()
+            ->select('plantation')
+            ->from(PlantationEntity::class, 'plantation');
+        if (count($ids) > 0) {
+            $query = $query
+                ->andWhere('plantation.id IN (:ids)')
+                ->setParameter('ids', $ids);
+
+        }
+        $items =  $query->getQuery()->getResult();
+        $plantations = [];
+        foreach ($items as $item) {
+            $plantations[] = $this->mapToDomain($item);
+        }
+        return $plantations;
     }
 }
