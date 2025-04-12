@@ -84,7 +84,7 @@ class GetPlantationListTest extends WebTestCase
         $this->assertArrayHasKey('id', $response['plantations'][0]);
         $this->assertArrayHasKey('name', $response['plantations'][0]);
         $this->assertEquals('first Plantation', $response['plantations'][0]['name']);
-        $this->assertEquals('third Plantation', $response['plantations'][1]['name']);
+        $this->assertEquals('third Plantation', $response['plantations'][2]['name']);
     }
 
     #[Test]
