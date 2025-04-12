@@ -12,7 +12,9 @@ class WorkType
     public function __construct(
         public readonly Name $name,
         public readonly bool $isSystem = false,
-    ) {}
+    ) {
+
+    }
 
     public function getId(): ?int
     {

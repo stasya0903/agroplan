@@ -10,7 +10,7 @@ class Worker
     private ?int $id = null;
 
     public function __construct(
-        private Name  $name,
+        private Name $name,
         private Money $dailyRate
     ) {
     }

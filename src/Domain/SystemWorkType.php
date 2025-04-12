@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Domain;
 
 enum SystemWorkType: int
@@ -12,7 +13,7 @@ enum SystemWorkType: int
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::HARVEST => 'corte',
             self::IRRIGATION => 'regada',
             self::FERTILIZATION => 'fumigada',
@@ -40,4 +41,3 @@ enum SystemWorkType: int
         return in_array(strtolower($name), self::names(), true);
     }
 }
-

@@ -56,5 +56,4 @@ class WorkTypeEntity
         $this->name = $name;
         $this->isSystem = $isSystem;
     }
-
 }
