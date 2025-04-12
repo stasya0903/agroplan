@@ -105,7 +105,7 @@ class CreateWorkerTest extends WebTestCase
     {
         $data = [
             'name' => 'Unpaid worker',
-            'dailyRate' => '0.00'
+            'dailyRate' => 0.00
         ];
 
         $this->client->request(
