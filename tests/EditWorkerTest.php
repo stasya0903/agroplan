@@ -182,5 +182,4 @@ class EditWorkerTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Worker not found.', $content['message']);
     }
-
 }
