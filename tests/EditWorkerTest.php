@@ -55,7 +55,7 @@ class EditWorkerTest extends WebTestCase
         $worker = $this->repository->find($data['id']);
         $this->assertNotNull($worker);
         $this->assertEquals($worker->getName()->getValue(), $data['name']);
-        $this->assertEquals($worker->getDailyRate()->getAmountAsFloat(), $data['name']);
+        $this->assertEquals($worker->getDailyRate()->getAmountAsFloat(), $data['dailyRate']);
     }
 
     #[Test]
