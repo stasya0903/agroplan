@@ -31,7 +31,7 @@ class CreateWorkerTest extends WebTestCase
     {
         $data = [
             'name' => 'New Worker',
-            'dailyRate' => '350.00'
+            'dailyRate' => 350.00
         ];
 
         $this->client->request(
@@ -53,7 +53,7 @@ class CreateWorkerTest extends WebTestCase
     {
         $data = [
             'name' => '',
-            'dailyRate' => '350.00'
+            'dailyRate' => 350.00
         ];
 
         $this->client->request(
@@ -128,7 +128,7 @@ class CreateWorkerTest extends WebTestCase
     {
         $data = [
             'name' => 'Unpaid worker',
-            'dailyRate' => '-350.00'
+            'dailyRate' => -350.00
         ];
 
         $this->client->request(
