@@ -52,7 +52,7 @@ class GetWorkTypeListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertIsArray($response['work_types'] ?? null);
+        $this->assertIsArray($response['workTypes'] ?? null);
         $this->assertCount(2, $response['work_types']);
         $this->assertArrayHasKey('id', $response['work_types'][0]);
         $this->assertArrayHasKey('name', $response['work_types'][0]);
@@ -85,7 +85,7 @@ class GetWorkTypeListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertIsArray($response['work_types'] ?? null);
+        $this->assertIsArray($response['workTypes'] ?? null);
         $this->assertCount(2, $response['work_types']);
         $this->assertArrayHasKey('id', $response['work_types'][0]);
         $this->assertArrayHasKey('name', $response['work_types'][0]);
