@@ -58,12 +58,14 @@ class GetPlantationListTest extends WebTestCase
     public function testGetSomePlantationsSuccess(): void
     {
         $plantationNames = ['first Plantation', 'second Plantation', 'third Plantation'];
+        $ids = [];
         foreach ($plantationNames as $existingPlantation) {
             $plantation = new Plantation(new PlantationName($existingPlantation));
             $this->repository->save($plantation);
+            $ids[] = $plantation->getId();
         }
         $data = [
-            'ids' => [1,3],
+            'ids' => [$ids[0],$ids[2]],
         ];
 
         $this->client->request(
