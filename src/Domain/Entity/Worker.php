@@ -14,7 +14,6 @@ class Worker
     public function __construct(
         private WorkerName $name,
         private Money $dailyRate
-
     ) {
     }
 
@@ -32,5 +31,4 @@ class Worker
     {
         return $this->id;
     }
-
 }

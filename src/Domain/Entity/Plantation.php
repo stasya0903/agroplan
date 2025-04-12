@@ -9,7 +9,7 @@ class Plantation
     private ?int $id = null;
 
     public function __construct(
-        private  PlantationName $name
+        private PlantationName $name
     ) {
     }
 

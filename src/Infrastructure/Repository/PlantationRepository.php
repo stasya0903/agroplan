@@ -46,7 +46,7 @@ class PlantationRepository implements PlantationRepositoryInterface
     private function mapToEntity(Plantation $plantation): PlantationEntity
     {
         $id = $plantation->getId();
-        if($id){
+        if ($id) {
             $existing = $this->em
                 ->getRepository(PlantationEntity::class)
                 ->findOneBy(['id' => $plantation->getId()]);

@@ -12,7 +12,6 @@ use App\Domain\ValueObject\WorkerName;
 
 class WorkerFactory implements WorkerFactoryInterface
 {
-
     public function create(WorkerName $workerName, Money $dailyRate): Worker
     {
         return new Worker($workerName, $dailyRate);

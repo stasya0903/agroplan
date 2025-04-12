@@ -39,7 +39,5 @@ final class Money
         if ($amount <= 0) {
             throw new \InvalidArgumentException('Amount must be greater than zero.');
         }
-
-
     }
 }

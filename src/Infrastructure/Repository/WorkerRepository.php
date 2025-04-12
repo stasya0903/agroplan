@@ -49,11 +49,11 @@ class WorkerRepository implements WorkerRepositoryInterface
         $id = $worker->getId();
         $name = $worker->getName()->getValue();
         $rate = $worker->getDailyRate()->getAmount();
-        if($id){
+        if ($id) {
             $entity = $this->em->getRepository(WorkerEntity::class)->findOneBy(['id' => $worker->getId()]);
             $entity->setName($name);
             $entity->setDailyRateInCents($rate);
-        } else{
+        } else {
             $entity = $existing ?? new WorkerEntity($name, $rate);
         }
         return $entity;

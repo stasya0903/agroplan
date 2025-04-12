@@ -22,7 +22,7 @@ class CreateWorkerTest extends WebTestCase
     {
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get(
-           WorkerRepositoryInterface::class
+            WorkerRepositoryInterface::class
         );
         $this->truncateTables(['workers']);
     }
