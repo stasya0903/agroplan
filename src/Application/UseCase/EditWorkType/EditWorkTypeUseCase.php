@@ -16,10 +16,10 @@ class EditWorkTypeUseCase
 
     public function __invoke(EditWorkTypeRequest $request): EditWorkTypeResponse
     {
-        if (SystemWorkType::isSystemId($request->id) ) {
+        if (SystemWorkType::isSystemId($request->id)) {
             throw new \DomainException('Can not edit system work type');
         }
-        if (SystemWorkType::isSystemName($request->name) ) {
+        if (SystemWorkType::isSystemName($request->name)) {
             throw new \DomainException('WorkType name used by system.');
         }
         $workType = $this->repository->find($request->id);
@@ -27,8 +27,9 @@ class EditWorkTypeUseCase
         if (!$workType) {
             throw new \DomainException('WorkType not found.');
         }
-        if ( $this->repository->existsByName($request->name) &&
-            $request->name !== $workType->getName()) {
+        if ($this->repository->existsByName($request->name) &&
+            $request->name !== $workType->getName())
+        {
             throw new \DomainException('WorkType name must be unique.');
         }
         $workType->rename(new Name($request->name));
