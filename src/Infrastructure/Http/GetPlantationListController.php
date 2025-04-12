@@ -34,8 +34,7 @@ final class GetPlantationListController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] HttpGetPlantationListRequest $httpRequest,
         ValidatorInterface $validator
-    ): Response
-    {
+    ): Response {
         try {
             $errors = $validator->validate($httpRequest);
             if (count($errors) > 0) {
