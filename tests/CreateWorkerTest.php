@@ -82,7 +82,7 @@ class CreateWorkerTest extends WebTestCase
 
         $data = [
             'name' => 'Existing Worker',
-            'dailyRate' => '350.00'
+            'dailyRate' => 350.00
         ];
 
         $this->client->request(
