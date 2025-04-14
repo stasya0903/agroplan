@@ -2,12 +2,9 @@
 
 namespace App\Tests;
 
-use App\Domain\Entity\Plantation;
 use App\Domain\Entity\WorkType;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
-use App\Domain\SystemWorkType;
-use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
 use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

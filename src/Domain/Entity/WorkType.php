@@ -2,7 +2,7 @@
 
 namespace App\Domain\Entity;
 
-use App\Domain\SystemWorkType;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\ValueObject\Name;
 
 class WorkType

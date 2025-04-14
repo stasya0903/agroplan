@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use App\Domain\SystemWorkType;
-use App\Infrastructure\Entity\WorkTypeEntity;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 

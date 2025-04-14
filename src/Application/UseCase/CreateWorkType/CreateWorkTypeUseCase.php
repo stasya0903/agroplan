@@ -2,15 +2,9 @@
 
 namespace App\Application\UseCase\CreateWorkType;
 
-use App\Application\UseCase\CreateWorkType\CreateWorkTypeRequest;
-use App\Application\UseCase\CreateWorkType\CreateWorkTypeResponse;
-use App\Domain\Factory\PlantationFactoryInterface;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\Factory\WorkTypeFactoryInterface;
-use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
-use App\Domain\SystemWorkType;
-use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
 use App\Domain\ValueObject\Name;
 
 class CreateWorkTypeUseCase

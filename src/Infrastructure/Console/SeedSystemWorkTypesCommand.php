@@ -3,8 +3,8 @@
 namespace App\Infrastructure\Console;
 
 use App\Domain\Entity\WorkType;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
-use App\Domain\SystemWorkType;
 use App\Domain\ValueObject\Name;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

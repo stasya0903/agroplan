@@ -2,9 +2,8 @@
 
 namespace App\Application\UseCase\EditWorkType;
 
-use App\Domain\Factory\WorkTypeFactoryInterface;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
-use App\Domain\SystemWorkType;
 use App\Domain\ValueObject\Name;
 
 class EditWorkTypeUseCase
