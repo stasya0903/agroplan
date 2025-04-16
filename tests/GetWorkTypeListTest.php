@@ -53,6 +53,11 @@ class GetWorkTypeListTest extends WebTestCase
         $this->assertCount(2 + count($systemTypes), $response['workTypes']);
         $this->assertArrayHasKey('id', $response['workTypes'][0]);
         $this->assertArrayHasKey('name', $response['workTypes'][0]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertContains(
+            ['value' => 3, 'label' => 'fumigada'],
+            $data
+        );
     }
 
     #[Test]
