@@ -37,5 +37,4 @@ class GetSpendingTypeList extends WebTestCase
             $this->assertArrayHasKey('label', $item);
         }
     }
-
 }
