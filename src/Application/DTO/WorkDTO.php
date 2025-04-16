@@ -8,10 +8,10 @@ class WorkDTO
         public int $workTypeId,
         public string $workTypeName,
         public int $plantationId,
+        public string $plantationName,
         public string $date,
-        public array $workerIds,
+        public array $workersInfo,
         public ?string $note
     ) {
     }
-
 }

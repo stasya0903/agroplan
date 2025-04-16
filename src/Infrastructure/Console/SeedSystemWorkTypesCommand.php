@@ -36,8 +36,6 @@ class SeedSystemWorkTypesCommand extends Command
                     $this->workTypeRepository->save($newWorkType);
                 }
             }
-            dd($this->workTypeRepository->getList());
-
             return Command::SUCCESS;
         } catch (\Throwable $e) {
             $output->writeln('<error>Error: ' . $e->getMessage() . '</error>');

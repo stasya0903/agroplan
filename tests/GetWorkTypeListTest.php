@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Domain\Entity\WorkType;
+use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
@@ -24,18 +25,13 @@ class GetWorkTypeListTest extends WebTestCase
         $this->repository = static::getContainer()->get(
             WorkTypeRepositoryInterface::class
         );
-        $this->truncateTables(['work_types']);
     }
     #[Test]
     public function testGetAllWorkTypesSuccess(): void
     {
         $work_typeNames = ['first WorkType', 'second WorkType'];
         foreach ($work_typeNames as $existingWorkType) {
-            $this->repository->save(
-                new WorkType(
-                    new Name($existingWorkType)
-                )
-            );
+            $this->repository->save(new WorkType(new Name($existingWorkType)));
         }
         $data = [
             'ids' => null,
@@ -53,7 +49,8 @@ class GetWorkTypeListTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($response['workTypes'] ?? null);
-        $this->assertCount(2, $response['workTypes']);
+        $systemTypes = SystemWorkType::cases();
+        $this->assertCount(2 + count($systemTypes), $response['workTypes']);
         $this->assertArrayHasKey('id', $response['workTypes'][0]);
         $this->assertArrayHasKey('name', $response['workTypes'][0]);
     }
