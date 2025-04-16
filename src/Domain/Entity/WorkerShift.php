@@ -16,7 +16,6 @@ class WorkerShift
         private Date $date,
         private Money $payment,
         private bool $paid = false
-
     ) {
     }
     public function assignToWork(Work $work): void
@@ -27,11 +26,6 @@ class WorkerShift
     public function getWork(): Work
     {
         return $this->work;
-    }
-
-    public function getSpending(): Spending
-    {
-        return $this->spending;
     }
 
     public function getPlantation(): Plantation
@@ -64,5 +58,4 @@ class WorkerShift
     {
         return $this->payment;
     }
-
 }

@@ -11,15 +11,6 @@ class Work
     private ?int $id = null;
     private array $workerShifts = [];
 
-    public function getWorkerShifts(): array
-    {
-        return $this->workerShifts;
-    }
-
-    public function getSpending(): ?Spending
-    {
-        return $this->spending;
-    } // array of WorkerShift
     private ?Spending $spending = null;
 
     public function __construct(
@@ -31,6 +22,16 @@ class Work
 
     ) {
         $this->validate();
+    }
+
+    public function getWorkerShifts(): array
+    {
+        return $this->workerShifts;
+    }
+
+    public function getSpending(): ?Spending
+    {
+        return $this->spending;
     }
 
     public function addWorkerShift(WorkerShift $shift): void
@@ -80,5 +81,4 @@ class Work
             throw new \DomainException('Note is required for OTHER work type.');
         }
     }
-
 }

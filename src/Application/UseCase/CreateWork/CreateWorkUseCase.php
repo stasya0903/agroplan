@@ -30,7 +30,7 @@ class CreateWorkUseCase
         private readonly SpendingFactoryInterface $spendingFactory,
         private readonly SpendingRepositoryInterface $spendingRepository,
         private readonly TransactionalSessionInterface $transaction
-    ){
+    ) {
     }
 
     public function __invoke(CreateWorkRequest $request): CreateWorkResponse
