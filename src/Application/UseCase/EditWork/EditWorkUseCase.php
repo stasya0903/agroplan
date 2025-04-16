@@ -40,6 +40,7 @@ class EditWorkUseCase
     public function __invoke(EditWorkRequest $request): EditWorkResponse
     {
         $work = $this->repository->find($request->workId);
+
         if (!$work) {
             throw new \DomainException('Work not found.');
         }

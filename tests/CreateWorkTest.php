@@ -38,7 +38,7 @@ class CreateWorkTest extends WebTestCase
         $this->workerRepository = static::getContainer()->get(WorkerRepositoryInterface::class);
         $this->workerShiftRepository = static::getContainer()->get(WorkerShiftRepositoryInterface::class);
         $this->spendingRepository = static::getContainer()->get(SpendingRepositoryInterface::class);
-        $this->truncateTables(['work', 'worker_shift', 'spending']);
+        $this->truncateTables(['work', 'worker_shift', 'spending', 'workers']);
     }
 
     #[Test]
@@ -65,7 +65,7 @@ class CreateWorkTest extends WebTestCase
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
             "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
-            "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
             "note" => "test work"
         ];
         $this->client->request(
@@ -154,7 +154,7 @@ class CreateWorkTest extends WebTestCase
             "workTypeId" => 90,
             "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
-            "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
             "note" => "test work"
         ];
 
@@ -193,7 +193,7 @@ class CreateWorkTest extends WebTestCase
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
             "plantationId" => 90,
             "date" => date('Y-m-d H:m:s'),
-            "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
             "note" => "test work"
         ];
 
