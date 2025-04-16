@@ -10,7 +10,6 @@ class CreateWorkRequest
         public string $date,
         public array $workerIds,
         public ?string $note
-
     ) {
     }
 }

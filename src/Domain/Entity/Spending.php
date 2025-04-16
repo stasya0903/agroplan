@@ -18,7 +18,6 @@ class Spending
         private Date $date,
         private Money $amount,
         private Note $info
-
     ) {
     }
 
@@ -65,5 +64,4 @@ class Spending
     {
         return $this->info;
     }
-
 }

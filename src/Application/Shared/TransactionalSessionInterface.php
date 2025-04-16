@@ -12,5 +12,4 @@ interface TransactionalSessionInterface
      * @return T
      */
     public function run(callable $fn): mixed;
-
 }

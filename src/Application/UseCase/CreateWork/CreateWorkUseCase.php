@@ -30,8 +30,7 @@ class CreateWorkUseCase
         private readonly SpendingFactoryInterface $spendingFactory,
         private readonly SpendingRepositoryInterface $spendingRepository,
         private readonly TransactionalSessionInterface $transaction
-    )
-    {
+    ){
     }
 
     public function __invoke(CreateWorkRequest $request): CreateWorkResponse
@@ -55,7 +54,7 @@ class CreateWorkUseCase
                 $workers[] = $worker;
             }
         }
-        return $this->transaction->run(function() use ($workers, $plantation, $workType, $request) {
+        return $this->transaction->run(function () use ($workers, $plantation, $workType, $request) {
             $date = new Date($request->date);
             $work = $this->factory->create(
                 $workType,
