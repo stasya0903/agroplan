@@ -120,8 +120,4 @@ class SpendingEntity
         $this->amountInCents = $payment;
         $this->note = $note;
     }
-
-
-
-
 }

@@ -11,10 +11,11 @@ use App\Domain\ValueObject\Note;
 
 interface SpendingFactoryInterface
 {
-    public function create(Plantation $plantation,
-                           SpendingType $type,
-                           Date $date,
-                           Money $amount,
-                           Note $info)
-    : Spending;
+    public function create(
+        Plantation $plantation,
+        SpendingType $type,
+        Date $date,
+        Money $amount,
+        Note $info
+    ): Spending;
 }

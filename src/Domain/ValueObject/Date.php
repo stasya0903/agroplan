@@ -30,5 +30,4 @@ final class Date
     {
         return $this->value->format('Y-m-d H:i:s');
     }
-
 }

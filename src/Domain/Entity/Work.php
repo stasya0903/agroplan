@@ -19,7 +19,6 @@ class Work
         private Date $date,
         private array $workers,
         private Note $note
-
     ) {
         $this->validate();
     }

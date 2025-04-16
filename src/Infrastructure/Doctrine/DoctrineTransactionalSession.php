@@ -7,11 +7,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DoctrineTransactionalSession implements TransactionalSessionInterface
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private readonly EntityManagerInterface $em)
+    {
+    }
 
     public function run(callable $fn): mixed
     {
-        return $this->em->wrapInTransaction($fn); // Best with Doctrine >= 2.9
+        return $this->em->wrapInTransaction($fn);
     }
-
 }

@@ -115,11 +115,4 @@ class WorkEntity
     {
         $this->workers = $workers;
     }
-
-
-
-
-
-
-
 }
