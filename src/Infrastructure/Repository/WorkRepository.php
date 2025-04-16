@@ -86,7 +86,9 @@ class WorkRepository implements WorkRepositoryInterface
 
     public function findWithShiftsAndSpending(int $id): ?Work
     {
-        $entity =  $this->em->createQueryBuilder('w')
+        $entity =  $this->em->createQueryBuilder()
+            ->select('w')
+            ->from(WorkEntity::class, 'w')
             ->leftJoin('w.workerShifts', 'ws')->addSelect('ws')
             ->leftJoin('w.spending', 's')->addSelect('s')
             ->where('w.id = :id')

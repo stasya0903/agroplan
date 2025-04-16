@@ -87,12 +87,12 @@ class SpendingEntity
         $this->amountInCents = $amountInCents;
     }
 
-    public function getNote(): string
+    public function getNote(): ?string
     {
         return $this->note;
     }
 
-    public function setNote(string $note): void
+    public function setNote(?string $note): void
     {
         $this->note = $note;
     }

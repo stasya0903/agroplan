@@ -38,6 +38,10 @@ class WorkEntity
     #[ORM\OneToOne(targetEntity: SpendingEntity::class, mappedBy: 'work', cascade: ['persist'])]
     private ?SpendingEntity $spending = null;
 
+    #[ORM\OneToMany(targetEntity: WorkerShiftEntity::class, mappedBy: 'work', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $workerShifts;
+
+
     public function getSpending(): ?SpendingEntity
     {
         return $this->spending;
@@ -57,9 +61,6 @@ class WorkEntity
     {
         $this->workerShifts = $workerShifts;
     }
-
-    #[ORM\OneToMany(targetEntity: WorkerShiftEntity::class, mappedBy: 'work', cascade: ['persist'], orphanRemoval: true)]
-    private Collection $workerShifts;
 
 
     public function __construct(

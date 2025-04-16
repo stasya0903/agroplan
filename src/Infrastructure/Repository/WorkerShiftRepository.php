@@ -99,8 +99,15 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         return $workerShifts;
     }
 
-    public function deleteByWorkAndWorkerId(?int $workId, mixed $workerId): void
+    public function delete(int $workerShiftId): void
     {
-        // TODO: Implement deleteByWorkAndWorkerId() method.
+        $workerShift = $this->em->getRepository(WorkerShiftEntity::class)->find($workerShiftId);
+
+        if (!$workerShift) {
+            throw new \DomainException("WorkerShift with ID $workerShiftId not found.");
+        }
+
+        $this->em->remove($workerShift);
+        $this->em->flush();
     }
 }
