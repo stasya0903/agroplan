@@ -16,7 +16,8 @@ final class SpendingMapper
 {
     public function __construct(
         private readonly PlantationMapper $plantationMapper
-    ) {}
+    ) {
+    }
 
     public function mapToDomain(SpendingEntity $entity): Spending
     {
@@ -33,10 +34,11 @@ final class SpendingMapper
         return $spending;
     }
 
-    public function mapToEntity(Spending $spending,
-                                PlantationEntity $plantation,
-                                ?WorkEntity $work,
-                                SpendingEntity $entity = null
+    public function mapToEntity(
+        Spending $spending,
+        PlantationEntity $plantation,
+        ?WorkEntity $work,
+        SpendingEntity $entity = null
     ): SpendingEntity {
         $date = $spending->getDate()->getValue();
         $money = $spending->getAmount()->getAmount();
@@ -49,7 +51,6 @@ final class SpendingMapper
             $entity->setDate($date);
             $entity->setAmountInCents($money);
             $entity->setNote($note);
-
         } else {
             $entity = new SpendingEntity(
                 $plantation,
@@ -64,7 +65,4 @@ final class SpendingMapper
         }
         return $entity;
     }
-
-
-
 }

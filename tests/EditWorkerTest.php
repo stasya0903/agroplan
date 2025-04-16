@@ -7,7 +7,6 @@ use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
-use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
