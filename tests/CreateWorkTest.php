@@ -42,7 +42,7 @@ class CreateWorkTest extends WebTestCase
     }
 
     #[Test]
-    public function testCreateWorkerSuccess(): void
+    public function testCreateWorkSuccess(): void
     {
         //create plantation
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));
@@ -63,12 +63,11 @@ class CreateWorkTest extends WebTestCase
         }
         $data = [
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
-            "plantationId" => $plantation->getId()->value,
+            "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
             "note" => "test work"
         ];
-
         $this->client->request(
             'POST',
             '/api/v1/work/add',

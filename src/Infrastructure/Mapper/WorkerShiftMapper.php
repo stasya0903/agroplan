@@ -17,7 +17,8 @@ final class WorkerShiftMapper
     public function __construct(
         private readonly PlantationMapper $plantationMapper,
         private readonly WorkerMapper $workerMapper,
-    ) {}
+    ) {
+    }
 
     public function mapToDomain(WorkerShiftEntity $entity): WorkerShift
     {
@@ -27,7 +28,6 @@ final class WorkerShiftMapper
             new Date($entity->getDate()->format('Y-m-d H:i:s')),
             new Money($entity->getPaymentInCents()),
             $entity->isPaid()
-
         );
         $reflectionProperty = new \ReflectionProperty(WorkerShift::class, 'id');
         $reflectionProperty->setAccessible(true);

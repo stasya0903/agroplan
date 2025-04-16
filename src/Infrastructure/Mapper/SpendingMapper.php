@@ -44,7 +44,6 @@ final class SpendingMapper
         $money = $spending->getAmount()->getAmount();
         $type = $spending->getType();
         $note = $spending->getInfo()->getValue();
-        
         if ($entity) {
             $entity->setPlantation($plantation);
             $entity->setType($type);

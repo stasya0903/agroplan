@@ -16,7 +16,8 @@ final class WorkMapper
         private readonly WorkTypeMapper $workTypeMapper,
         private readonly PlantationMapper $plantationMapper,
         private readonly WorkerMapper $workerMapper,
-    ) {}
+    ) {
+    }
 
     public function mapToDomain(WorkEntity $entity): Work
     {
@@ -31,7 +32,6 @@ final class WorkMapper
             new Date($entity->getDate()->format('Y-m-d H:i:s')),
             $workers,
             new Note($entity->getNote()),
-
         );
         $reflectionProperty = new \ReflectionProperty(Work::class, 'id');
         $reflectionProperty->setAccessible(true);
@@ -45,8 +45,7 @@ final class WorkMapper
         PlantationEntity $plantation,
         ArrayCollection $workerEntities,
         ?WorkEntity $entity = null
-    ): WorkEntity
-    {
+    ): WorkEntity {
         $date = $work->getDate()->getValue();
         $note = $work->getNote()->getValue();
         if ($entity) {
@@ -66,5 +65,4 @@ final class WorkMapper
         }
         return $entity;
     }
-
 }

@@ -20,7 +20,7 @@ final class WorkTypeMapper
         return $workType;
     }
 
-    public function mapToEntity(WorkType $workType, ?WorkTypeEntity $entity =  null): WorkTypeEntity
+    public function mapToEntity(WorkType $workType, ?WorkTypeEntity $entity = null): WorkTypeEntity
     {
         $id = $workType->getId();
         $name = $workType->getName()->getValue();
@@ -34,5 +34,4 @@ final class WorkTypeMapper
         }
         return $entity;
     }
-
 }

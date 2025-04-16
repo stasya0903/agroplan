@@ -22,13 +22,12 @@ final class WorkerMapper
     {
         $name = $worker->getName()->getValue();
         $rate = $worker->getDailyRate()->getAmount();
-        if($entity){
+        if ($entity) {
             $entity->setName($name);
             $entity->setDailyRateInCents($rate);
-        }else{
-            $entity =  new WorkerEntity($name, $rate);
+        } else {
+            $entity = new WorkerEntity($name, $rate);
         }
         return $entity;
     }
-
 }
