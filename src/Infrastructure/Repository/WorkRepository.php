@@ -20,8 +20,7 @@ class WorkRepository implements WorkRepositoryInterface
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly WorkMapper $mapper
-    )
-    {
+    ) {
     }
 
     public function find(int $id): ?Work

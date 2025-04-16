@@ -35,11 +35,12 @@ final class WorkerShiftMapper
         return $workerShift;
     }
 
-    public function mapToEntity(WorkerShift $workerShift,
-                                WorkerEntity $worker,
-                                PlantationEntity $plantation,
-                                WorkEntity $work,
-                                WorkerShiftEntity $entity = null
+    public function mapToEntity(
+        WorkerShift $workerShift,
+        WorkerEntity $worker,
+        PlantationEntity $plantation,
+        WorkEntity $work,
+        WorkerShiftEntity $entity = null
     ): WorkerShiftEntity {
         $date = $workerShift->getDate()->getValue();
         $money = $workerShift->getPayment()->getAmount();
@@ -63,7 +64,4 @@ final class WorkerShiftMapper
         }
         return $entity;
     }
-
-
-
 }

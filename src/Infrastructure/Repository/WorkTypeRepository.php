@@ -17,8 +17,7 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
     public function __construct(
         private EntityManagerInterface $em,
         private WorkTypeMapper $mapper,
-    )
-    {
+    ) {
     }
 
     public function find(int $id): ?WorkType

@@ -112,7 +112,7 @@ class CreateWorkTest extends WebTestCase
 
         $data = [
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
-            "plantationId" => $plantation->getId()->value,
+            "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => [1],
             "note" => "test work"
@@ -153,7 +153,7 @@ class CreateWorkTest extends WebTestCase
         }
         $data = [
             "workTypeId" => 90,
-            "plantationId" => $plantation->getId()->value,
+            "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
             "note" => "test work"
@@ -193,7 +193,7 @@ class CreateWorkTest extends WebTestCase
         }
         $data = [
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
-            "plantationId" => $plantation->getId()->value,
+            "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
             "note" => "test work"

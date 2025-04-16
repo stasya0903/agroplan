@@ -17,8 +17,7 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly WorkerShiftMapper $mapper
-    )
-    {
+    ) {
     }
 
     public function find(int $id): ?WorkerShift
@@ -99,6 +98,4 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         }
         return $workerShifts;
     }
-
-
 }

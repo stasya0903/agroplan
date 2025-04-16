@@ -14,7 +14,7 @@ class PlantationRepository implements PlantationRepositoryInterface
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly PlantationMapper $mapper
-    ){
+    ) {
     }
 
     public function find(int $id): ?Plantation
@@ -31,7 +31,7 @@ class PlantationRepository implements PlantationRepositoryInterface
 
             $existing = $plantation->getId()
             ? $this->em->getRepository(PlantationEntity::class)->findOneBy(['id' => $plantation->getId()])
-            :null;
+            : null;
 
         $entity = $this->mapper->mapToEntity($plantation, $existing);
 

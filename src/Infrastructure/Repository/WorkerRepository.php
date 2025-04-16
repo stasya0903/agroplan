@@ -16,8 +16,7 @@ class WorkerRepository implements WorkerRepositoryInterface
     public function __construct(
         private EntityManagerInterface $em,
         private WorkerMapper $mapper
-    )
-    {
+    ) {
     }
 
     public function find(int $id): ?Worker

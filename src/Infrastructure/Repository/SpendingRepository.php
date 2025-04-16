@@ -17,8 +17,7 @@ class SpendingRepository implements SpendingRepositoryInterface
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly SpendingMapper $mapper
-    )
-    {
+    ) {
     }
 
     public function find(int $id): ?Spending
@@ -89,6 +88,4 @@ class SpendingRepository implements SpendingRepositoryInterface
         }
         return $spending;
     }
-
-
 }
