@@ -52,8 +52,11 @@ jobs:
       - name: Set up test environment
         run: |
           echo "APP_ENV=test" > .env
-          echo "DATABASE_URL=postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=14&charset=utf8" > .env.test.local
-          echo "CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'" > .env.test.local
+          echo "
+          DATABASE_URL=postgresql://test_user:test_password@127.0.0.1:5432/test_db?serverVersion=14&charset=utf8
+          CORS_ALLOW_ORIGIN='^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+          " > .env.test.local
+          
       
 
       # Set up Docker Buildx
