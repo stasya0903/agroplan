@@ -4,7 +4,7 @@ namespace App\Tests;
 
 use App\Domain\Entity\Plantation;
 use App\Domain\Repository\PlantationRepositoryInterface;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Infrastructure\Entity\PlantationEntity;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -31,7 +31,7 @@ class GetPlantationListTest extends WebTestCase
     {
         $plantationNames = ['first Plantation', 'second Plantation'];
         foreach ($plantationNames as $existingPlantation) {
-            $this->repository->save(new Plantation(new PlantationName($existingPlantation)));
+            $this->repository->save(new Plantation(new Name($existingPlantation)));
         }
         $data = [
             'ids' => null,
@@ -60,7 +60,7 @@ class GetPlantationListTest extends WebTestCase
         $plantationNames = ['first Plantation', 'second Plantation', 'third Plantation'];
         $ids = [];
         foreach ($plantationNames as $existingPlantation) {
-            $plantation = new Plantation(new PlantationName($existingPlantation));
+            $plantation = new Plantation(new Name($existingPlantation));
             $this->repository->save($plantation);
             $ids[] = $plantation->getId();
         }

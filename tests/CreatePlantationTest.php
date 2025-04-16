@@ -4,7 +4,7 @@ namespace App\Tests;
 
 use App\Domain\Entity\Plantation;
 use App\Domain\Repository\PlantationRepositoryInterface;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Infrastructure\Entity\PlantationEntity;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -72,7 +72,7 @@ class CreatePlantationTest extends WebTestCase
     #[Test]
     public function testCreatePlantationWithDuplicateName(): void
     {
-        $existingPlantation = new Plantation(new PlantationName('Existing Plantation'));
+        $existingPlantation = new Plantation(new Name('Existing Plantation'));
         $this->repository->save($existingPlantation);
 
         // Send a POST request with a duplicate plantation name

@@ -15,6 +15,6 @@ interface WorkerShiftFactoryInterface
         Plantation $plantation,
         Date $date,
         Money $payment,
-        bool $paid =  false
+        bool $paid = false
     ): WorkerShift;
 }

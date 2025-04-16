@@ -4,7 +4,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Plantation;
 use App\Domain\Repository\PlantationRepositoryInterface;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Infrastructure\Entity\PlantationEntity;
 use App\Infrastructure\Mapper\PlantationMapper;
 use Doctrine\ORM\EntityManagerInterface;

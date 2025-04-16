@@ -53,9 +53,9 @@ class GetWorkTypeListTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($response['workTypes'] ?? null);
-        $this->assertCount(2, $response['work_types']);
-        $this->assertArrayHasKey('id', $response['work_types'][0]);
-        $this->assertArrayHasKey('name', $response['work_types'][0]);
+        $this->assertCount(2, $response['workTypes']);
+        $this->assertArrayHasKey('id', $response['workTypes'][0]);
+        $this->assertArrayHasKey('name', $response['workTypes'][0]);
     }
 
     #[Test]
@@ -86,11 +86,11 @@ class GetWorkTypeListTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($response['workTypes'] ?? null);
-        $this->assertCount(2, $response['work_types']);
-        $this->assertArrayHasKey('id', $response['work_types'][0]);
-        $this->assertArrayHasKey('name', $response['work_types'][0]);
-        $this->assertEquals('first WorkType', $response['work_types'][0]['name']);
-        $this->assertEquals('third WorkType', $response['work_types'][1]['name']);
+        $this->assertCount(2, $response['workTypes']);
+        $this->assertArrayHasKey('id', $response['workTypes'][0]);
+        $this->assertArrayHasKey('name', $response['workTypes'][0]);
+        $this->assertEquals('first WorkType', $response['workTypes'][0]['name']);
+        $this->assertEquals('third WorkType', $response['workTypes'][1]['name']);
     }
 
     #[Test]

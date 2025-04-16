@@ -4,7 +4,7 @@ namespace App\Application\UseCase\CreatePlantation;
 
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class CreatePlantationUseCase
 {
@@ -20,7 +20,7 @@ class CreatePlantationUseCase
             throw new \DomainException('Plantation name must be unique.');
         }
 
-        $plantation = $this->factory->create(new PlantationName($request->name));
+        $plantation = $this->factory->create(new Name($request->name));
         $this->plantationRepository->save($plantation);
         return new CreatePlantationResponse($plantation->getId());
     }

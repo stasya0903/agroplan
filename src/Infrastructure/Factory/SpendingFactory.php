@@ -10,7 +10,7 @@ use App\Domain\Factory\SpendingFactoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class SpendingFactory implements SpendingFactoryInterface
 {
@@ -20,8 +20,7 @@ class SpendingFactory implements SpendingFactoryInterface
         Date $date,
         Money $amount,
         Note $info
-    ): Spending
-    {
+    ): Spending {
         return new Spending($plantation, $type, $date, $amount, $info);
     }
 }

@@ -6,7 +6,7 @@ use App\Domain\Entity\Plantation;
 use App\Domain\Entity\Worker;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Domain\ValueObject\Name;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;

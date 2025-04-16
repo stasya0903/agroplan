@@ -2,14 +2,14 @@
 
 namespace App\Domain\Entity;
 
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class Plantation
 {
     private ?int $id = null;
 
     public function __construct(
-        private PlantationName $name
+        private Name $name
     ) {
     }
 
@@ -18,12 +18,12 @@ class Plantation
         return $this->id;
     }
 
-    public function getName(): PlantationName
+    public function getName(): Name
     {
         return $this->name;
     }
 
-    public function rename(PlantationName $newName): void
+    public function rename(Name $newName): void
     {
         $this->name = $newName;
     }

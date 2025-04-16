@@ -9,7 +9,7 @@ use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class WorkerShiftFactory implements WorkerShiftFactoryInterface
 {
@@ -19,8 +19,7 @@ class WorkerShiftFactory implements WorkerShiftFactoryInterface
         Date $date,
         Money $payment,
         bool $paid = false
-    ): WorkerShift
-    {
+    ): WorkerShift {
         return new WorkerShift($worker, $plantation, $date, $payment, $paid);
     }
 }

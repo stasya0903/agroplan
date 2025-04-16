@@ -3,9 +3,9 @@
 namespace App\Domain\Factory;
 
 use App\Domain\Entity\Plantation;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 interface PlantationFactoryInterface
 {
-    public function create(PlantationName $name): Plantation;
+    public function create(Name $name): Plantation;
 }

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
-
 use App\Application\UseCase\GetList\SpendingType\SpendingTypeListUseCase;
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;

@@ -124,8 +124,4 @@ class WorkerShiftEntity
         $this->paymentInCents = $payment;
         $this->paid = $paid;
     }
-
-
-
-
 }

@@ -3,7 +3,7 @@
 namespace App\Application\UseCase\EditPlantation;
 
 use App\Domain\Repository\PlantationRepositoryInterface;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class EditPlantationUseCase
 {
@@ -27,7 +27,7 @@ class EditPlantationUseCase
             throw new \DomainException('Plantation name must be unique.');
         }
 
-        $plantation->rename(new PlantationName($request->name));
+        $plantation->rename(new Name($request->name));
         $this->plantationRepository->save($plantation);
 
         return new EditPlantationResponse($plantation->getId(), $plantation->getName()->getValue());

@@ -9,19 +9,17 @@ use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\WorkFactoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Note;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 
 class WorkFactory implements WorkFactoryInterface
 {
-
     public function create(
         WorkType $workType,
         Plantation $plantation,
         Date $date,
         array $workerIds,
         Note $note
-    ): Work
-    {
+    ): Work {
         return new Work($workType, $plantation, $date, $workerIds, $note);
     }
 }

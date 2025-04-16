@@ -7,7 +7,7 @@ use App\Domain\Factory\WorkerFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Domain\ValueObject\Name;
 
 class CreateWorkerUseCase

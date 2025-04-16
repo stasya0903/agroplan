@@ -7,7 +7,7 @@ use App\Domain\Entity\Worker;
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\WorkerFactoryInterface;
 use App\Domain\ValueObject\Money;
-use App\Domain\ValueObject\PlantationName;
+use App\Domain\ValueObject\Name;
 use App\Domain\ValueObject\Name;
 
 class WorkerFactory implements WorkerFactoryInterface
