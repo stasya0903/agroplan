@@ -21,6 +21,31 @@ class Spending
     ) {
     }
 
+    public function setPlantation(Plantation $plantation): void
+    {
+        $this->plantation = $plantation;
+    }
+
+    public function setType(SpendingType $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function setDate(Date $date): void
+    {
+        $this->date = $date;
+    }
+
+    public function setAmount(Money $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function setInfo(Note $info): void
+    {
+        $this->info = $info;
+    }
+
     public function getWork(): ?Work
     {
         return $this->work;

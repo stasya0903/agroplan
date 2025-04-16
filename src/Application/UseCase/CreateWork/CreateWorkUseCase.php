@@ -65,7 +65,7 @@ class CreateWorkUseCase
             );
             $this->repository->save($work);
 
-            $workPrice = 0;
+
             foreach ($workers as $worker) {
                 $workerShift = $this->workerShiftFactory->create(
                     $worker,
@@ -75,13 +75,12 @@ class CreateWorkUseCase
                 );
                 $workerShift->assignToWork($work);
                 $this->workerShiftRepository->save($workerShift);
-                $workPrice += $worker->getDailyRate()->getAmount();
             }
             $spending = $this->spendingFactory->create(
                 $plantation,
                 SpendingType::WORK,
                 $date,
-                new Money($workPrice),
+                $work->getFullPrice(),
                 new Note()
             );
             $spending->assignToWork($work);

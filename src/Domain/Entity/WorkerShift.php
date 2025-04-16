@@ -18,6 +18,31 @@ class WorkerShift
         private bool $paid = false
     ) {
     }
+
+    public function setWorker(Worker $worker): void
+    {
+        $this->worker = $worker;
+    }
+
+    public function setPlantation(Plantation $plantation): void
+    {
+        $this->plantation = $plantation;
+    }
+
+    public function setDate(Date $date): void
+    {
+        $this->date = $date;
+    }
+
+    public function setPayment(Money $payment): void
+    {
+        $this->payment = $payment;
+    }
+
+    public function setPaid(bool $paid): void
+    {
+        $this->paid = $paid;
+    }
     public function assignToWork(Work $work): void
     {
         $this->work = $work;

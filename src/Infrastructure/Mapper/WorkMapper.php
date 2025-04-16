@@ -34,8 +34,6 @@ final class WorkMapper
             new Note($entity->getNote()),
         );
 
-        dd($entity);
-
         $reflectionProperty = new \ReflectionProperty(Work::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($work, $entity->getId());

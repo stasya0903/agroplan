@@ -38,6 +38,26 @@ class WorkEntity
     #[ORM\OneToOne(targetEntity: SpendingEntity::class, mappedBy: 'work', cascade: ['persist'])]
     private ?SpendingEntity $spending = null;
 
+    public function getSpending(): ?SpendingEntity
+    {
+        return $this->spending;
+    }
+
+    public function setSpending(?SpendingEntity $spending): void
+    {
+        $this->spending = $spending;
+    }
+
+    public function getWorkerShifts(): Collection
+    {
+        return $this->workerShifts;
+    }
+
+    public function setWorkerShifts(Collection $workerShifts): void
+    {
+        $this->workerShifts = $workerShifts;
+    }
+
     #[ORM\OneToMany(targetEntity: WorkerShiftEntity::class, mappedBy: 'work', cascade: ['persist'], orphanRemoval: true)]
     private Collection $workerShifts;
 

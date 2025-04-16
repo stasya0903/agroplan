@@ -7,6 +7,7 @@ use App\Domain\Entity\Work;
 interface WorkRepositoryInterface
 {
     public function find(int $id): ?Work;
+    public function findWithShiftsAndSpending(int $id): ?Work;
     public function save(Work $work): void;
     public function getList(array $ids): array;
 }

@@ -4,6 +4,7 @@ namespace App\Domain\Entity;
 
 use App\Domain\Enums\SystemWorkType;
 use App\Domain\ValueObject\Date;
+use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
 
 class Work
@@ -62,6 +63,25 @@ class Work
     {
         $this->workerShifts[] = $shift;
         $shift->assignToWork($this);
+    }
+    public function removeWorkerShift(WorkerShift $shift): void
+    {
+        foreach ($this->workerShifts as $index => $existingShift) {
+            if ($existingShift === $shift) {
+                unset($this->workerShifts[$index]);
+                $this->workerShifts = array_values($this->workerShifts);
+                break;
+            }
+        }
+    }
+
+    public function getFullPrice(): Money
+    {
+        $total = 0;
+        foreach ($this->workers as $worker){
+            $total += $worker->getDailyRate()->getAmount();
+        }
+        return new Money($total);
     }
 
     public function assignSpending(Spending $spending): void

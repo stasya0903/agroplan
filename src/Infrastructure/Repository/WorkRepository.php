@@ -10,7 +10,10 @@ use App\Infrastructure\Entity\PlantationEntity;
 use App\Infrastructure\Entity\WorkEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use App\Infrastructure\Entity\WorkTypeEntity;
+use App\Infrastructure\Mapper\SpendingMapper;
+use App\Infrastructure\Mapper\WorkerShiftMapper;
 use App\Infrastructure\Mapper\WorkMapper;
+use App\Infrastructure\Mapper\WorkTypeMapper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
@@ -19,7 +22,9 @@ class WorkRepository implements WorkRepositoryInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly WorkMapper $mapper
+        private readonly WorkMapper $mapper,
+        private readonly WorkerShiftMapper $workerShiftMapper,
+        private readonly SpendingMapper $spendingMapper,
     ) {
     }
 
@@ -77,5 +82,27 @@ class WorkRepository implements WorkRepositoryInterface
             $works[] = $this->mapper->mapToDomain($item);
         }
         return $works;
+    }
+
+    public function findWithShiftsAndSpending(int $id): ?Work
+    {
+        $entity =  $this->em->createQueryBuilder('w')
+            ->leftJoin('w.workerShifts', 'ws')->addSelect('ws')
+            ->leftJoin('w.spending', 's')->addSelect('s')
+            ->where('w.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult();
+        if (!$entity) {
+            return null;
+        }
+        $work =  $this->mapper->mapToDomain($entity);
+        foreach ($entity->getWorkerShifts() as $worker) {
+            $work->addWorkerShift($this->workerShiftMapper->mapToDomain($worker));
+        }
+        if($entity->getSpending()){
+            $work->assignSpending($this->spendingMapper->mapToDomain($entity->getSpending()));
+        }
+        return $work;
     }
 }
