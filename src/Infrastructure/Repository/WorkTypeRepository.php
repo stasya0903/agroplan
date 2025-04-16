@@ -32,7 +32,7 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
     public function save(WorkType $workType): void
     {
         $existing = $workType->getId()
-            ? $this->em->getRepository(WorkEntity::class)->findOneBy(['id' => $workType->getId()])
+            ? $this->em->getRepository(WorkTypeEntity::class)->findOneBy(['id' => $workType->getId()])
             : null;
         $entity = $this->mapper->mapToEntity($workType, $existing);
         $this->em->persist($entity);
