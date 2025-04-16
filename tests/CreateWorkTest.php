@@ -100,7 +100,6 @@ class CreateWorkTest extends WebTestCase
         $this->assertEquals($plantation->getId(), $spending->getPlantation()->getId());
         $this->assertEquals(SpendingType::WORK, $spending->getType());
         $this->assertEquals($work->getId(), $spending->getWork()?->getId());
-
     }
 
     #[Test]
@@ -176,7 +175,6 @@ class CreateWorkTest extends WebTestCase
 
     public function testCreateWorkWithNotWorkType(): void
     {
-        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
         //create two workers
         $workers = [];
         $workersInfo = [
@@ -193,7 +191,7 @@ class CreateWorkTest extends WebTestCase
         }
         $data = [
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
-            "plantationId" => $plantation->getId(),
+            "plantationId" => 90,
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => array_map(fn($worker) => $worker->getId()->value, $workers),
             "note" => "test work"
