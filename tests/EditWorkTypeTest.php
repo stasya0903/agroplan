@@ -24,7 +24,6 @@ class EditWorkTypeTest extends WebTestCase
         $this->repository = static::getContainer()->get(
             WorkTypeRepositoryInterface::class
         );
-        $this->truncateTables(['work_types']);
         $this->existingWorkType = new WorkType(
             new Name('initial work_type')
         );

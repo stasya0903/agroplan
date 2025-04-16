@@ -5,6 +5,7 @@ namespace App\Application\UseCase\EditWork;
 use App\Application\Shared\TransactionalSessionInterface;
 use App\Application\UseCase\CreateWork\CreateWorkRequest;
 use App\Application\UseCase\CreateWork\CreateWorkResponse;
+use App\Domain\Entity\Work;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\SpendingFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
@@ -22,17 +23,18 @@ use App\Domain\ValueObject\Note;
 class EditWorkUseCase
 {
     public function __construct(
-        private readonly WorkFactoryInterface $factory,
-        private readonly WorkerShiftFactoryInterface $workerShiftFactory,
-        private readonly WorkRepositoryInterface $repository,
-        private readonly PlantationRepositoryInterface $plantationRepository,
-        private readonly WorkTypeRepositoryInterface $workTypeRepository,
-        private readonly WorkerRepositoryInterface $workerRepository,
+        private readonly WorkFactoryInterface           $factory,
+        private readonly WorkerShiftFactoryInterface    $workerShiftFactory,
+        private readonly WorkRepositoryInterface        $repository,
+        private readonly PlantationRepositoryInterface  $plantationRepository,
+        private readonly WorkTypeRepositoryInterface    $workTypeRepository,
+        private readonly WorkerRepositoryInterface      $workerRepository,
         private readonly WorkerShiftRepositoryInterface $workerShiftRepository,
-        private readonly SpendingFactoryInterface $spendingFactory,
-        private readonly SpendingRepositoryInterface $spendingRepository,
-        private readonly TransactionalSessionInterface $transaction
-    ) {
+        private readonly SpendingFactoryInterface       $spendingFactory,
+        private readonly SpendingRepositoryInterface    $spendingRepository,
+        private readonly TransactionalSessionInterface  $transaction
+    )
+    {
     }
 
     public function __invoke(EditWorkRequest $request): EditWorkResponse
@@ -62,6 +64,7 @@ class EditWorkUseCase
         }
         return $this->transaction->run(function () use ($work, $workers, $plantation, $workType, $request) {
             $date = new Date($request->date);
+            $originalWorkers = $work->getWorkers();
             $work->setWorkType($workType);
             $work->setPlantation($plantation);
             $work->setDate($date);
@@ -70,28 +73,40 @@ class EditWorkUseCase
 
             $this->repository->save($work);
 
-            $workPrice = 0;
-            foreach ($workers as $worker) {
-                $workerShift = $this->workerShiftFactory->create(
-                    $worker,
-                    $plantation,
-                    $date,
-                    $worker->getDailyRate()
-                );
-                $workerShift->assignToWork($work);
-                $this->workerShiftRepository->save($workerShift);
-                $workPrice += $worker->getDailyRate()->getAmount();
-            }
-            $spending = $this->spendingFactory->create(
-                $plantation,
-                SpendingType::WORK,
-                $date,
-                new Money($workPrice),
-                new Note()
-            );
-            $spending->assignToWork($work);
-            $this->spendingRepository->save($spending);
+            $this->updateWorkerShifts($work, $originalWorkers);
+            $this->updateSpendingForWork($work);
             return new CreateWorkResponse($work->getId());
         });
+    }
+
+    private function updateWorkerShifts(Work $work, array $originalWorkers): void
+    {
+        $currentWorkerIds = array_map(fn($w) => $w->getId()->value, $work->getWorkers());
+        $originalWorkerIds = array_map(fn($w) => $w->getId()->value, $originalWorkers);
+
+        $addedWorkers = array_diff($currentWorkerIds, $originalWorkerIds);
+        $removedWorkers = array_diff($originalWorkerIds, $currentWorkerIds);
+
+        // Remove WorkerShifts
+        foreach ($removedWorkers as $removedId) {
+            $this->workerShiftRepository->deleteByWorkAndWorkerId($work->getId(), $removedId);
+        }
+
+        // Add or update WorkerShifts
+        foreach ($work->getWorkers() as $worker) {
+            $workerShift = $this->workerShiftRepository->findByWorkAndWorkerId($work->getId(), $worker->getId());
+
+            if (!$workerShift) {
+                $newShift = $this->workerShiftFactory->create($work, $worker);
+                $this->workerShiftRepository->save($newShift);
+            } else {
+                $workerShift->updateFromWork($work); // You could define a method like this
+                $this->workerShiftRepository->save($workerShift);
+            }
+        }
+    }
+
+    private function updateSpendingForWork(\App\Domain\Entity\Work $work)
+    {
     }
 }

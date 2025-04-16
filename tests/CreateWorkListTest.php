@@ -24,7 +24,6 @@ class CreateWorkListTest extends WebTestCase
         $this->repository = static::getContainer()->get(
             WorkTypeRepositoryInterface::class
         );
-        $this->truncateTables(['work_types']);
     }
     #[Test]
     public function testCreateWorkTypeSuccess(): void

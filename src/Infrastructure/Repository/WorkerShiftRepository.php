@@ -98,4 +98,9 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         }
         return $workerShifts;
     }
+
+    public function deleteByWorkAndWorkerId(?int $workId, mixed $workerId): void
+    {
+        // TODO: Implement deleteByWorkAndWorkerId() method.
+    }
 }

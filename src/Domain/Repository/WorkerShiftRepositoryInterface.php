@@ -11,4 +11,6 @@ interface WorkerShiftRepositoryInterface
     public function getList(array $ids): array;
 
     public function findByWork(int $workId): array;
+
+    public function deleteByWorkAndWorkerId(?int $workId, mixed $workerId): void;
 }
