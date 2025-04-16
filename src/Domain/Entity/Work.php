@@ -23,6 +23,31 @@ class Work
         $this->validate();
     }
 
+    public function setWorkType(WorkType $workType): void
+    {
+        $this->workType = $workType;
+    }
+
+    public function setPlantation(Plantation $plantation): void
+    {
+        $this->plantation = $plantation;
+    }
+
+    public function setDate(Date $date): void
+    {
+        $this->date = $date;
+    }
+
+    public function setWorkers(array $workers): void
+    {
+        $this->workers = $workers;
+    }
+
+    public function setNote(Note $note): void
+    {
+        $this->note = $note;
+    }
+
     public function getWorkerShifts(): array
     {
         return $this->workerShifts;

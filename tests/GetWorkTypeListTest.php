@@ -36,6 +36,7 @@ class GetWorkTypeListTest extends WebTestCase
         $data = [
             'ids' => null,
         ];
+        dd($this->repository->getList([]));
 
         $this->client->request(
             'POST',

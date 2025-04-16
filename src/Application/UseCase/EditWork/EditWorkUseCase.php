@@ -62,7 +62,11 @@ class EditWorkUseCase
         }
         return $this->transaction->run(function () use ($work, $workers, $plantation, $workType, $request) {
             $date = new Date($request->date);
-            $work->
+            $work->setWorkType($workType);
+            $work->setPlantation($plantation);
+            $work->setDate($date);
+            $work->setWorkers($workers);
+            $work->setNote(new Note($request->note));
 
             $this->repository->save($work);
 
