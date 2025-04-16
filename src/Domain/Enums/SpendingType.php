@@ -2,16 +2,17 @@
 
 namespace App\Domain\Enums;
 
-enum SpendingType: string
+enum SpendingType: int
 {
-    case CHEMICALS = 'chemicals';                // Productos químicos
-    case DIESEL = 'diesel';                      // Diésel
-    case GASOLINE = 'gasoline';                  // Gasolina
-    case PROTECTIVE_EQUIPMENT = 'protective_equipment'; // Equipo de protección
-    case MACHINERY = 'machinery';                // Maquinaria y Equipo
-    case OTHER = 'other';                        // Otros
-    case FERTILIZER = 'fertilizer';              // Fertilizante
+    case CHEMICALS = 1;                // Productos químicos
+    case DIESEL = 2;                      // Diésel
+    case GASOLINE = 3;                  // Gasolina
+    case PROTECTIVE_EQUIPMENT = 4; // Equipo de protección
+    case MACHINERY = 5;                // Maquinaria y Equipo
+    case OTHER = 6;                        // Otros
+    case FERTILIZER = 7;          // Fertilizante
 
+    case WORK = 8;
 
     public function label(): string
     {
@@ -23,6 +24,7 @@ enum SpendingType: string
             self::MACHINERY => 'Maquinaria y Equipo',
             self::OTHER => 'Other',
             self::FERTILIZER => 'Fertilizante',
+            self::WORK => 'Obra de mano',
         };
     }
 

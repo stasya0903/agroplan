@@ -9,7 +9,7 @@ use App\Domain\Entity\WorkType;
 interface WorkTypeRepositoryInterface
 {
     public function find(int $id): ?WorkType;
-    public function save(WorkType $plantation): void;
+    public function save(WorkType $workType): void;
     public function existsByName(string $name): bool;
     public function getList(array $ids): array;
 }

@@ -2,18 +2,51 @@
 
 namespace App\Domain\Entity;
 
+use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 
 class WorkerShift
 {
     private ?int $id = null;
+    private ?Work $work = null;
+
     public function __construct(
-        private int $workerId,
-        private \DateTimeInterface $date,
+        private Worker $worker,
+        private Plantation $plantation,
+        private Date $date,
         private Money $payment,
         private bool $paid = false
 
     ) {
+    }
+    public function assignToWork(Work $work): void
+    {
+        $this->work = $work;
+    }
+
+    public function getWork(): Work
+    {
+        return $this->work;
+    }
+
+    public function getSpending(): Spending
+    {
+        return $this->spending;
+    }
+
+    public function getPlantation(): Plantation
+    {
+        return $this->plantation;
+    }
+
+    public function getWorker(): Worker
+    {
+        return $this->worker;
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->paid;
     }
 
     public function getId(): ?int
@@ -21,12 +54,8 @@ class WorkerShift
         return $this->id;
     }
 
-    public function getWorkerId(): int
-    {
-        return $this->workerId;
-    }
 
-    public function getDate(): \DateTimeInterface
+    public function getDate(): Date
     {
         return $this->date;
     }

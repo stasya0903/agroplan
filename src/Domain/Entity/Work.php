@@ -3,46 +3,70 @@
 namespace App\Domain\Entity;
 
 use App\Domain\Enums\SystemWorkType;
+use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Note;
 
 class Work
 {
     private ?int $id = null;
+    private array $workerShifts = [];
+
+    public function getWorkerShifts(): array
+    {
+        return $this->workerShifts;
+    }
+
+    public function getSpending(): ?Spending
+    {
+        return $this->spending;
+    } // array of WorkerShift
+    private ?Spending $spending = null;
 
     public function __construct(
-        private int $workTypeId,
-        private int $plantationId,
-        private \DateTimeInterface $date,
-        private array $workerIds,
+        private WorkType $workType,
+        private Plantation $plantation,
+        private Date $date,
+        private array $workers,
         private Note $note
 
     ) {
         $this->validate();
     }
 
-    public function getPlantationId(): int
+    public function addWorkerShift(WorkerShift $shift): void
     {
-        return $this->plantationId;
+        $this->workerShifts[] = $shift;
+        $shift->assignToWork($this);
+    }
+
+    public function assignSpending(Spending $spending): void
+    {
+        $this->spending = $spending;
+        $spending->assignToWork($this);
+    }
+
+    public function getWorkers(): array
+    {
+        return $this->workers;
+    }
+
+    public function getWorkType(): WorkType
+    {
+        return $this->workType;
+    }
+
+    public function getPlantation(): Plantation
+    {
+        return $this->plantation;
     }
 
     public function getNote(): Note
     {
         return $this->note;
     }
-
-    public function getWorkerIds(): array
-    {
-        return $this->workerIds;
-    }
-
-    public function getDate(): \DateTimeInterface
+    public function getDate(): Date
     {
         return $this->date;
-    }
-
-    public function getWorkTypeId(): int
-    {
-        return $this->workTypeId;
     }
 
     public function getId(): ?int
@@ -52,7 +76,7 @@ class Work
 
     private function validate(): void
     {
-        if ($this->workTypeId === SystemWorkType::OTHER->value && !$this->note) {
+        if ($this->workType->getId() === SystemWorkType::OTHER->value && !$this->note->getValue()) {
             throw new \DomainException('Note is required for OTHER work type.');
         }
     }

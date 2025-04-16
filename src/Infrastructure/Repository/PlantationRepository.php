@@ -6,12 +6,15 @@ use App\Domain\Entity\Plantation;
 use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\ValueObject\PlantationName;
 use App\Infrastructure\Entity\PlantationEntity;
+use App\Infrastructure\Mapper\PlantationMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlantationRepository implements PlantationRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+        private readonly PlantationMapper $mapper
+    ){
     }
 
     public function find(int $id): ?Plantation
@@ -20,12 +23,17 @@ class PlantationRepository implements PlantationRepositoryInterface
         if (!$entity) {
             return null;
         }
-        return $this->mapToDomain($entity);
+        return $this->mapper->mapToDomain($entity);
     }
 
     public function save(Plantation $plantation): void
     {
-        $entity = $this->mapToEntity($plantation);
+
+            $existing = $plantation->getId()
+            ? $this->em->getRepository(PlantationEntity::class)->findOneBy(['id' => $plantation->getId()])
+            :null;
+
+        $entity = $this->mapper->mapToEntity($plantation, $existing);
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -34,27 +42,7 @@ class PlantationRepository implements PlantationRepositoryInterface
         $reflectionProperty->setValue($plantation, $entity->getId());
     }
 
-    private function mapToDomain(PlantationEntity $entity): Plantation
-    {
-        $plantation = new Plantation(new PlantationName($entity->getName()));
-        $reflectionProperty = new \ReflectionProperty(Plantation::class, 'id');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($plantation, $entity->getId());
-        return $plantation;
-    }
 
-    private function mapToEntity(Plantation $plantation): PlantationEntity
-    {
-        $id = $plantation->getId();
-        if ($id) {
-            $existing = $this->em
-                ->getRepository(PlantationEntity::class)
-                ->findOneBy(['id' => $plantation->getId()]);
-        }
-        $entity = $existing ?? new PlantationEntity($plantation->getName()->getValue());
-        $entity->setName($plantation->getName()->getValue());
-        return $entity;
-    }
 
     public function existsByName(string $name): bool
     {
@@ -76,7 +64,7 @@ class PlantationRepository implements PlantationRepositoryInterface
         $items =  $query->getQuery()->getResult();
         $plantations = [];
         foreach ($items as $item) {
-            $plantations[] = $this->mapToDomain($item);
+            $plantations[] = $this->mapper->mapToDomain($item);
         }
         return $plantations;
     }

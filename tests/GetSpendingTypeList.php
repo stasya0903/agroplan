@@ -18,11 +18,11 @@ class GetSpendingTypeList extends WebTestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertContains(
-            ['value' => 'diesel', 'label' => 'Diesel'],
+            ['value' => 1, 'label' => 'Diesel'],
             $data
         );
         $this->assertContains(
-            ['value' => 'fertilizer', 'label' => 'Fertilizer'],
+            ['value' => 7, 'label' => 'Fertilizer'],
             $data
         );
     }

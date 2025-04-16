@@ -7,12 +7,17 @@ use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
 use App\Infrastructure\Entity\PlantationEntity;
+use App\Infrastructure\Entity\WorkEntity;
 use App\Infrastructure\Entity\WorkTypeEntity;
+use App\Infrastructure\Mapper\WorkTypeMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class WorkTypeRepository implements WorkTypeRepositoryInterface
 {
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(
+        private EntityManagerInterface $em,
+        private WorkTypeMapper $mapper,
+    )
     {
     }
 
@@ -22,12 +27,15 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
         if (!$entity) {
             return null;
         }
-        return $this->mapToDomain($entity);
+        return $this->mapper->mapToDomain($entity);
     }
 
     public function save(WorkType $workType): void
     {
-        $entity = $this->mapToEntity($workType);
+        $existing = $workType->getId()
+            ? $this->em->getRepository(WorkEntity::class)->findOneBy(['id' => $workType->getId()])
+            : null;
+        $entity = $this->mapper->mapToEntity($workType, $existing);
         $this->em->persist($entity);
         $this->em->flush();
         $reflectionProperty = new \ReflectionProperty(WorkType::class, 'id');
@@ -35,34 +43,7 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
         $reflectionProperty->setValue($workType, $entity->getId());
     }
 
-    private function mapToDomain(WorkTypeEntity $entity): WorkType
-    {
-        $workType = new WorkType(
-            new Name($entity->getName()),
-            $entity->isSystem()
-        );
-        $reflectionProperty = new \ReflectionProperty(WorkType::class, 'id');
-        $reflectionProperty->setAccessible(true);
-        $reflectionProperty->setValue($workType, $entity->getId());
-        return $workType;
-    }
 
-    private function mapToEntity(WorkType $workType): WorkTypeEntity
-    {
-        $id = $workType->getId();
-        $name = $workType->getName()->getValue();
-        $isSystem = $workType->isSystem();
-        if ($id) {
-            $entity = $this->em->getRepository(WorkTypeEntity::class)
-                ->findOneBy(['id' => $workType->getId()]) ?? new WorkTypeEntity($name, $isSystem);
-            $entity->setId($id);
-            $entity->setName($name);
-            $entity->setIsSystem($isSystem);
-        } else {
-            $entity = $existing ?? new WorkTypeEntity($name, $isSystem);
-        }
-        return $entity;
-    }
     public function existsByName(string $name): bool
     {
         $repository = $this->em->getRepository(WorkTypeEntity::class);
@@ -83,7 +64,7 @@ class WorkTypeRepository implements WorkTypeRepositoryInterface
         $items =  $query->getQuery()->getResult();
         $workTypes = [];
         foreach ($items as $item) {
-            $workTypes[] = $this->mapToDomain($item);
+            $workTypes[] = $this->mapper->mapToDomain($item);
         }
         return $workTypes;
     }
