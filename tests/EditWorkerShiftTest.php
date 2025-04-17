@@ -38,6 +38,7 @@ class EditWorkerShiftTest extends WebTestCase
         $this->truncateTables(['work', 'spending', 'worker_shift', 'plantations']);
         $this->seed();
     }
+
     #[Test]
     public function testEditWorkerShiftSuccess(): void
     {
@@ -68,7 +69,6 @@ class EditWorkerShiftTest extends WebTestCase
             return $result;
         }, 0);
         $this->assertEquals($work->getSpending()->getAmount()->getAmount(), $cost);
-
     }
 
     public function testEditNotExistingWorkerShift(): void
@@ -94,6 +94,7 @@ class EditWorkerShiftTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Worker Shift not found.', $content['message']);
     }
+
     public function seed(): void
     {
         //create plantations
@@ -105,6 +106,7 @@ class EditWorkerShiftTest extends WebTestCase
         $this->workerRepo->save($this->worker1);
         $this->createWork('2025-04-10 00:00:00', $this->plantation, [$this->worker1]); //4500
     }
+
     private function createWork(
         string $date,
         Plantation $plantation,

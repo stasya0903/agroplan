@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-
 #[Route(
     '/api/v1/worker_shift/edit',
     name: 'worker_shift_edit',

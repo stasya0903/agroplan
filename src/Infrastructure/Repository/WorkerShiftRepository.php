@@ -41,13 +41,14 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
             return null;
         }
         $workerShift = $this->mapper->mapToDomain($entity);
-        if($withWork){
+        if ($withWork) {
             $workEntity = $entity->getWork();
             $workerShift->assignToWork($this->workMapper->mapToDomain($workEntity));
         }
 
         return $workerShift;
     }
+
     public function findByWork(int $workId): array
     {
         $items = $this->em->createQueryBuilder()
@@ -116,7 +117,7 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
                 ->andWhere('workerShift.id IN (:ids)')
                 ->setParameter('ids', $ids);
         }
-        $items =  $query->getQuery()->getResult();
+        $items = $query->getQuery()->getResult();
         $workerShifts = [];
         foreach ($items as $item) {
             $workerShifts[] = $this->mapper->mapToDomain($item);
