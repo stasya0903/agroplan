@@ -74,7 +74,7 @@ class GetWorkListHandler
                 $row['daily_rate_in_cents']
             );
         }
-        return  array_map(fn($row) => new WorkDTO(
+        return array_map(fn($row) => new WorkDTO(
             $row['id'],
             $row['work_type_id'],
             $row['work_type_name'],
@@ -85,5 +85,4 @@ class GetWorkListHandler
             $row['note'],
         ), $result);
     }
-
 }

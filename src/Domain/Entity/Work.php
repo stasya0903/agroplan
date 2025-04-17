@@ -64,6 +64,7 @@ class Work
         $this->workerShifts[] = $shift;
         $shift->assignToWork($this);
     }
+
     public function removeWorkerShift(WorkerShift $shift): void
     {
         foreach ($this->workerShifts as $index => $existingShift) {
@@ -78,7 +79,7 @@ class Work
     public function getFullPrice(): int
     {
         $total = 0;
-        foreach ($this->workers as $worker){
+        foreach ($this->workers as $worker) {
             $total += $worker->getDailyRate()->getAmount();
         }
         return $total;
@@ -109,6 +110,7 @@ class Work
     {
         return $this->note;
     }
+
     public function getDate(): Date
     {
         return $this->date;

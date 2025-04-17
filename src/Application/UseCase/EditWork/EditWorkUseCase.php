@@ -22,17 +22,16 @@ use App\Domain\ValueObject\Note;
 class EditWorkUseCase
 {
     public function __construct(
-        private readonly WorkerShiftFactoryInterface    $workerShiftFactory,
-        private readonly WorkRepositoryInterface        $repository,
-        private readonly PlantationRepositoryInterface  $plantationRepository,
-        private readonly WorkTypeRepositoryInterface    $workTypeRepository,
-        private readonly WorkerRepositoryInterface      $workerRepository,
+        private readonly WorkerShiftFactoryInterface $workerShiftFactory,
+        private readonly WorkRepositoryInterface $repository,
+        private readonly PlantationRepositoryInterface $plantationRepository,
+        private readonly WorkTypeRepositoryInterface $workTypeRepository,
+        private readonly WorkerRepositoryInterface $workerRepository,
         private readonly WorkerShiftRepositoryInterface $workerShiftRepository,
-        private readonly SpendingRepositoryInterface    $spendingRepository,
-        private readonly TransactionalSessionInterface  $transaction,
-        private readonly SpendingFactoryInterface       $spendingFactory,
-    )
-    {
+        private readonly SpendingRepositoryInterface $spendingRepository,
+        private readonly TransactionalSessionInterface $transaction,
+        private readonly SpendingFactoryInterface $spendingFactory,
+    ) {
     }
 
     public function __invoke(EditWorkRequest $request): EditWorkResponse
@@ -82,16 +81,18 @@ class EditWorkUseCase
                     $worker->getDailyRate()->getAmountAsFloat()
                 );
             }
-            return new EditWorkResponse(new WorkDto(
-                $work->getId(),
-                $work->getWorkType()->getId(),
-                $work->getWorkType()->getName()->getValue(),
-                $work->getPlantation()->getId(),
-                $work->getPlantation()->getName()->getValue(),
-                $work->getDate(),
-                $workersDto,
-                $work->getNote()->getValue()
-            ));
+            return new EditWorkResponse(
+                new WorkDto(
+                    $work->getId(),
+                    $work->getWorkType()->getId(),
+                    $work->getWorkType()->getName()->getValue(),
+                    $work->getPlantation()->getId(),
+                    $work->getPlantation()->getName()->getValue(),
+                    $work->getDate(),
+                    $workersDto,
+                    $work->getNote()->getValue()
+                )
+            );
         });
     }
 
@@ -148,9 +149,8 @@ class EditWorkUseCase
             }
             $work->assignSpending($spending);
             $this->spendingRepository->save($spending);
-
-        }else{
-            if($spending){
+        } else {
+            if ($spending) {
                 $this->spendingRepository->delete($spending->getId());
             }
         }

@@ -76,5 +76,4 @@ class GetWorkerShiftListHandler
             $row['paid'],
         ), $result);
     }
-
 }

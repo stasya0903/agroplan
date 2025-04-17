@@ -33,6 +33,4 @@ class GetWorkListQuery
     {
         return $this->plantationId;
     }
-
-
 }

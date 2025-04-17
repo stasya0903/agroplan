@@ -16,13 +16,13 @@ class GetWorkListUseCase
     public function __invoke(GetWorkListRequest $request): iterable
     {
         $dateFrom = $request->dateFrom ? new Date($request->dateFrom . ' 00:00:00') : null;
-        $dateTo = $request->dateTo ? new Date($request->dateTo. ' 23:59:59') : null;
+        $dateTo = $request->dateTo ? new Date($request->dateTo . ' 23:59:59') : null;
         $query = new GetWorkListQuery(
             $request->workTypeId,
             $request->plantationId,
             $dateFrom,
             $dateTo,
         );
-        return  $this->getNewsHandler->handle($query);
+        return $this->getNewsHandler->handle($query);
     }
 }

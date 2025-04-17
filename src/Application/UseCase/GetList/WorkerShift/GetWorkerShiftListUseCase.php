@@ -24,7 +24,7 @@ class GetWorkerShiftListUseCase
     public function __invoke(GetWorkerShiftListRequest $request): GetWorkerShiftListResponse
     {
         $dateFrom = $request->dateFrom ? new Date($request->dateFrom . ' 00:00:00') : null;
-        $dateTo = $request->dateTo ? new Date($request->dateTo. ' 23:59:59') : null;
+        $dateTo = $request->dateTo ? new Date($request->dateTo . ' 23:59:59') : null;
         $query = new GetWorkerShiftListQuery(
             $request->workerId,
             $request->plantationId,
@@ -34,10 +34,10 @@ class GetWorkerShiftListUseCase
         );
         $workShifts = $this->getNewsHandler->handle($query);
         $totalToPayInCents = array_reduce($workShifts, function ($result, $item) {
-             $result += Money::fromFloat( $item->payment)->getAmount();
-             return $result;
+            $result += Money::fromFloat($item->payment)->getAmount();
+            return $result;
         }, 0);
         $totalToPay = $totalToPayInCents > 0 ? (new Money($totalToPayInCents))->getAmountAsFloat() : 0;
-        return  new GetWorkerShiftListResponse($workShifts, $totalToPay);
+        return new GetWorkerShiftListResponse($workShifts, $totalToPay);
     }
 }

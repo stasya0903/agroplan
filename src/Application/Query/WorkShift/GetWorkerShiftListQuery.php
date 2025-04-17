@@ -39,6 +39,4 @@ class GetWorkerShiftListQuery
     {
         return $this->plantationId;
     }
-
-
 }

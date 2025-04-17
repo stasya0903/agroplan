@@ -29,7 +29,6 @@ class GetWorkListTest extends WebTestCase
 
     protected function setUp(): void
     {
-
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get(WorkRepositoryInterface::class);
         $this->workTypeRepository = static::getContainer()->get(WorkTypeRepositoryInterface::class);
@@ -38,6 +37,7 @@ class GetWorkListTest extends WebTestCase
         $this->truncateTables(['work', 'spending', 'worker_shift', 'plantations']);
         $this->seed();
     }
+
     #[Test]
     public function testGetAllWorkTypesSuccess(): void
     {
@@ -54,7 +54,7 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(3,$response);
+        $this->assertCount(3, $response);
         $this->assertIsArray($response);
         $this->assertArrayHasKey('id', $response[0]);
     }
@@ -77,7 +77,7 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(0, $response );
+        $this->assertCount(0, $response);
     }
 
     public function testFilterByWorkTypeSuccess(): void
@@ -97,7 +97,7 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response );
+        $this->assertCount(1, $response);
     }
 
     public function testFilterByDateFromTypeSuccess(): void
@@ -117,7 +117,7 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2, $response );
+        $this->assertCount(2, $response);
     }
 
     public function testFilterByDateToTypeSuccess(): void
@@ -137,8 +137,9 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response );
+        $this->assertCount(1, $response);
     }
+
     public function seed(): void
     {
         $fertilization = $this->workTypeRepository->find(SystemWorkType::FERTILIZATION->value);

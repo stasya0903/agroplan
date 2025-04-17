@@ -11,7 +11,8 @@ class SystemWorkTypeSeeder
 {
     public function __construct(
         private readonly WorkTypeRepositoryInterface $workTypeRepository
-    ) {}
+    ) {
+    }
 
     public function seed(): void
     {
@@ -30,5 +31,4 @@ class SystemWorkTypeSeeder
             }
         }
     }
-
 }

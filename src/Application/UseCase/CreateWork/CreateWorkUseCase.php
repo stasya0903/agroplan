@@ -78,7 +78,7 @@ class CreateWorkUseCase
             }
 
             $price = $work->getFullPrice();
-            if($price > 0){
+            if ($price > 0) {
                 $spending = $this->spendingFactory->create(
                     $plantation,
                     SpendingType::WORK,

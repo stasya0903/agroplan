@@ -32,7 +32,6 @@ class GetWorkerShiftListTest extends WebTestCase
 
     protected function setUp(): void
     {
-
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get(WorkRepositoryInterface::class);
         $this->workTypeRepository = static::getContainer()->get(WorkTypeRepositoryInterface::class);
@@ -41,6 +40,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->truncateTables(['work', 'spending', 'worker_shift', 'plantations']);
         $this->seed();
     }
+
     #[Test]
     public function testGetAllWorkTypesSuccess(): void
     {
@@ -57,7 +57,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(4,$response["workerShifts"]);
+        $this->assertCount(4, $response["workerShifts"]);
         $this->assertIsArray($response["workerShifts"]);
         $this->assertArrayHasKey('id', $response["workerShifts"][0]);
         $this->assertEquals(900.00, $response["totalToPay"]);
@@ -81,7 +81,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(0,$response["workerShifts"]);
+        $this->assertCount(0, $response["workerShifts"]);
         $this->assertIsArray($response["workerShifts"]);
         $this->assertEquals(0, $response["totalToPay"]);
     }
@@ -103,7 +103,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertCount(2, $response["workerShifts"]);
         $this->assertIsArray($response["workerShifts"]);
         $this->assertEquals($this->worker1->getId(), $response["workerShifts"][0]['workerId']);
         $this->assertEquals($this->worker1->getId(), $response["workerShifts"][1]['workerId']);
@@ -127,7 +127,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertCount(2, $response["workerShifts"]);
         $this->assertEquals(450.00, $response["totalToPay"]);
     }
 
@@ -148,9 +148,10 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertCount(2, $response["workerShifts"]);
         $this->assertEquals(450.00, $response["totalToPay"]);
     }
+
     public function testFilterByPaidToTypeSuccess(): void
     {
         $data = [
@@ -171,6 +172,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertCount(0, $response["workerShifts"]);
         $this->assertEquals(0, $response["totalToPay"]);
     }
+
     public function seed(): void
     {
         //create plantations
