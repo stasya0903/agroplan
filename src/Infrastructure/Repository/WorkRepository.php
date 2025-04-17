@@ -66,6 +66,7 @@ class WorkRepository implements WorkRepositoryInterface
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($work, $entity->getId());
     }
+
     public function getList(array $ids = []): array
     {
         $query = $this->em->createQueryBuilder()
@@ -76,7 +77,7 @@ class WorkRepository implements WorkRepositoryInterface
                 ->andWhere('work.id IN (:ids)')
                 ->setParameter('ids', $ids);
         }
-        $items =  $query->getQuery()->getResult();
+        $items = $query->getQuery()->getResult();
         $works = [];
         foreach ($items as $item) {
             $works[] = $this->mapper->mapToDomain($item);
@@ -86,7 +87,7 @@ class WorkRepository implements WorkRepositoryInterface
 
     public function findWithShiftsAndSpending(int $id): ?Work
     {
-        $entity =  $this->em->createQueryBuilder()
+        $entity = $this->em->createQueryBuilder()
             ->select('w')
             ->from(WorkEntity::class, 'w')
             ->leftJoin('w.workerShifts', 'ws')->addSelect('ws')
@@ -98,12 +99,12 @@ class WorkRepository implements WorkRepositoryInterface
         if (!$entity) {
             return null;
         }
-        $work =  $this->mapper->mapToDomain($entity);
+        $work = $this->mapper->mapToDomain($entity);
         foreach ($entity->getWorkerShifts() as $worker) {
             $work->addWorkerShift($this->workerShiftMapper->mapToDomain($worker));
         }
-            if ($entity->getSpending()) {
-                $work->assignSpending($this->spendingMapper->mapToDomain($entity->getSpending()));
+        if ($entity->getSpending()) {
+            $work->assignSpending($this->spendingMapper->mapToDomain($entity->getSpending()));
         }
         return $work;
     }
