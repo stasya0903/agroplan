@@ -6,7 +6,7 @@ use App\Domain\Entity\WorkerShift;
 
 interface WorkerShiftRepositoryInterface
 {
-    public function find(int $id): ?WorkerShift;
+    public function find(int $id, $withWork = false): ?WorkerShift;
     public function save(WorkerShift $workerShift): void;
     public function getList(array $ids): array;
 

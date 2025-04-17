@@ -9,6 +9,7 @@ use App\Infrastructure\Entity\WorkEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use App\Infrastructure\Entity\WorkerShiftEntity;
 use App\Infrastructure\Mapper\WorkerShiftMapper;
+use App\Infrastructure\Mapper\WorkMapper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 
@@ -16,17 +17,36 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly WorkerShiftMapper $mapper
+        private readonly WorkerShiftMapper $mapper,
+        private readonly WorkMapper $workMapper,
     ) {
     }
 
-    public function find(int $id): ?WorkerShift
+    public function find(int $id, $withWork = false): ?WorkerShift
     {
-        $entity = $this->em->getRepository(WorkerShiftEntity::class)->find($id);
+        $qb = $this->em->createQueryBuilder()
+            ->select('ws')
+            ->from(WorkerShiftEntity::class, 'ws')
+            ->where('ws.id = :id')
+            ->setParameter('id', $id);
+
+        if ($withWork) {
+            $qb->addSelect('w')
+                ->leftJoin('ws.work', 'w');
+        }
+
+        $entity = $qb->getQuery()->getOneOrNullResult();
+
         if (!$entity) {
             return null;
         }
-        return $this->mapper->mapToDomain($entity);
+        $workerShift = $this->mapper->mapToDomain($entity);
+        if($withWork){
+            $workEntity = $entity->getWork();
+            $workerShift->assignToWork($this->workMapper->mapToDomain($workEntity));
+        }
+
+        return $workerShift;
     }
     public function findByWork(int $workId): array
     {
@@ -41,7 +61,10 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
 
         $workerShifts = [];
         foreach ($items as $item) {
-            $workerShifts[] = $this->mapper->mapToDomain($item);
+            $workEntity = $item->getWork();
+            $workerShift = $this->mapper->mapToDomain($item);
+            $workerShift->assignToWork($this->workMapper->mapToDomain($workEntity));
+            $workerShifts[] = $workerShift;
         }
 
         return $workerShifts;

@@ -16,8 +16,7 @@ final class WorkerShiftMapper
 {
     public function __construct(
         private readonly PlantationMapper $plantationMapper,
-        private readonly WorkerMapper $workerMapper,
-        private readonly WorkMapper $workMapper,
+        private readonly WorkerMapper $workerMapper
     ) {
     }
 
@@ -35,9 +34,7 @@ final class WorkerShiftMapper
         $reflectionProperty = new \ReflectionProperty(WorkerShift::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($workerShift, $entity->getId());
-        if ($entity->getWork()) {
-            $workerShift->assignToWork($this->workMapper->mapToDomain($entity->getWork()));
-        }
+
         return $workerShift;
     }
 

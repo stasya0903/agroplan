@@ -48,7 +48,7 @@ class WorkerShift
         $this->work = $work;
     }
 
-    public function getWork(): Work
+    public function getWork(): ?Work
     {
         return $this->work;
     }
