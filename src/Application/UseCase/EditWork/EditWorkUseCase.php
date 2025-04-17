@@ -5,13 +5,10 @@ namespace App\Application\UseCase\EditWork;
 use App\Application\DTO\WorkDTO;
 use App\Application\DTO\WorkerDTO;
 use App\Application\Shared\TransactionalSessionInterface;
-use App\Application\UseCase\CreateWork\CreateWorkRequest;
-use App\Application\UseCase\CreateWork\CreateWorkResponse;
 use App\Domain\Entity\Work;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\SpendingFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
-use App\Domain\Factory\WorkFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
@@ -32,7 +29,8 @@ class EditWorkUseCase
         private readonly WorkerRepositoryInterface      $workerRepository,
         private readonly WorkerShiftRepositoryInterface $workerShiftRepository,
         private readonly SpendingRepositoryInterface    $spendingRepository,
-        private readonly TransactionalSessionInterface  $transaction
+        private readonly TransactionalSessionInterface  $transaction,
+        private readonly SpendingFactoryInterface       $spendingFactory,
     )
     {
     }
@@ -85,6 +83,7 @@ class EditWorkUseCase
                 );
             }
             return new EditWorkResponse(new WorkDto(
+                $work->getId(),
                 $work->getWorkType()->getId(),
                 $work->getWorkType()->getName()->getValue(),
                 $work->getPlantation()->getId(),
@@ -116,7 +115,7 @@ class EditWorkUseCase
         $shiftWorkerIds = array_map(fn($s) => $s->getWorker()->getId(), $work->getWorkerShifts());
 
         foreach ($workers as $worker) {
-            if (!in_array($worker->getId(),  $shiftWorkerIds)) {
+            if (!in_array($worker->getId(), $shiftWorkerIds)) {
                 $shift = $this->workerShiftFactory->create(
                     $worker,
                     $work->getPlantation(),
@@ -132,10 +131,28 @@ class EditWorkUseCase
     private function updateSpendingForWork(Work $work): void
     {
         $spending = $work->getSpending();
-        $spending->setPlantation($work->getPlantation());
-        $spending->setDate($work->getDate());
-        $spending->setAmount($work->getFullPrice());
-        $this->spendingRepository->save($spending);
-        $work->assignSpending($spending);
+        $price = $work->getFullPrice();
+        if ($price > 0) {
+            if (!$spending) {
+                $spending = $this->spendingFactory->create(
+                    $work->getPlantation(),
+                    SpendingType::WORK,
+                    $work->getDate(),
+                    new Money($work->getFullPrice()),
+                    new Note()
+                );
+            } else {
+                $spending->setPlantation($work->getPlantation());
+                $spending->setDate($work->getDate());
+                $spending->setAmount(new Money($price));
+            }
+            $work->assignSpending($spending);
+            $this->spendingRepository->save($spending);
+
+        }else{
+            if($spending){
+                $this->spendingRepository->delete($spending->getId());
+            }
+        }
     }
 }

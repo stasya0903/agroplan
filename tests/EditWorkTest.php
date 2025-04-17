@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Domain\Entity\Work;
 use App\Domain\Entity\Worker;
 use App\Domain\Entity\WorkerShift;
 use App\Domain\Entity\WorkType;
@@ -14,14 +15,17 @@ use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\Repository\WorkerShiftRepositoryInterface;
 use App\Domain\Repository\WorkRepositoryInterface;
+use App\Domain\Repository\WorkTypeRepositoryInterface;
+use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
+use App\Domain\ValueObject\Note;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateWorkTest extends WebTestCase
+class EditWorkTest extends WebTestCase
 {
     use TableResetTrait;
 
@@ -38,29 +42,12 @@ class CreateWorkTest extends WebTestCase
         $this->workerRepository = static::getContainer()->get(WorkerRepositoryInterface::class);
         $this->workerShiftRepository = static::getContainer()->get(WorkerShiftRepositoryInterface::class);
         $this->spendingRepository = static::getContainer()->get(SpendingRepositoryInterface::class);
-        $this->truncateTables(['work', 'worker_shift', 'spending', 'workers']);
-    }
-
-    #[Test]
-    public function testCreateWorkSuccess(): void
-    {
+        $this->workTypeRepository = static::getContainer()->get(WorkTypeRepositoryInterface::class);
         //create plantation
-        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $plantation = $this->plantationFactory->create(new Name('new Plantation for edit'));
         $this->plantationRepository->save($plantation);
-        //create two workers
+
         $workers = [];
-        $workersInfo = [
-            ['name' => 'Worker1', 'dailyRate' => 350.00],
-            ['name' => 'Worker2', 'dailyRate' => 350.00]
-        ];
-        foreach ($workersInfo as $info) {
-            $worker = $this->workerFactory->create(
-                new Name($info['name']),
-                Money::fromFloat($info['dailyRate'])
-            );
-            $this->workerRepository->save($worker);
-            $workers[] = $worker;
-        }
         $data = [
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
             "plantationId" => $plantation->getId(),
@@ -76,14 +63,58 @@ class CreateWorkTest extends WebTestCase
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($data)
         );
-        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true);
+        $this->existingWork = $this->repository->find($data['id']);
+    }
 
+    #[Test]
+    public function testEditWorkSuccess(): void
+    {
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('updated plantation'));
+        $this->plantationRepository->save($plantation);
+        $data = [
+            "workId" => $this->existingWork->getId(),
+            "workTypeId" => SystemWorkType::HARVEST->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "updated note"
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $response = $this->client->getResponse();
+        $data = json_decode($response->getContent(), true)['work'];
         $this->assertArrayHasKey('id', $data);
         $work = $this->repository->find($data['id']);
         $this->assertNotNull($work);
+        $this->assertEquals($data['plantationId'], $work->getPlantation()->getId());
+        $this->assertEquals($data['workTypeId'], $work->getWorkType()->getId());
+        $this->assertEquals($data['date'], $work->getDate());
+        $this->assertEquals($data['note'], $work->getNote()->getValue());
 
+        //check workShiftUpdate
         $workerShifts = $this->workerShiftRepository->findByWork($data['id']);
         $this->assertCount(2, $workerShifts, 'There should be two worker shifts created.');
         foreach ($workerShifts as $shift) {
@@ -95,6 +126,7 @@ class CreateWorkTest extends WebTestCase
             $this->assertEquals($work->getId(), $shift->getWork()->getId());
         }
 
+        //check spending update
         $spending = $this->spendingRepository->findByWork($data['id']);
         $this->assertEquals(700.00, $spending->getAmount()->getAmountAsFloat());
         $this->assertEquals($plantation->getId(), $spending->getPlantation()->getId());
@@ -103,15 +135,12 @@ class CreateWorkTest extends WebTestCase
     }
 
     #[Test]
-    public function testCreateWorkWithNotExistingWorker(): void
+    public function testEditWorkWithNotExistingWorker(): void
     {
-        //create plantation
-        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
-        $this->plantationRepository->save($plantation);
-
         $data = [
+            "workId" => $this->existingWork->getId(),
             "workTypeId" => SystemWorkType::FERTILIZATION->value,
-            "plantationId" => $plantation->getId(),
+            "plantationId" => $this->existingWork->getplantation()->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => [1],
             "note" => "test work"
@@ -119,7 +148,7 @@ class CreateWorkTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/work/add',
+            '/api/v1/work/edit',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -134,33 +163,18 @@ class CreateWorkTest extends WebTestCase
 
     public function testCreateWorkWithNotExistingPlantation(): void
     {
-        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
-        $this->plantationRepository->save($plantation);
-        //create two workers
-        $workers = [];
-        $workersInfo = [
-            ['name' => 'Worker1', 'dailyRate' => 350.00],
-            ['name' => 'Worker2', 'dailyRate' => 350.00]
-        ];
-        foreach ($workersInfo as $info) {
-            $worker = $this->workerFactory->create(
-                new Name($info['name']),
-                Money::fromFloat($info['dailyRate'])
-            );
-            $this->workerRepository->save($worker);
-            $workers[] = $worker;
-        }
         $data = [
+            "workId" => $this->existingWork->getId(),
             "workTypeId" => 90,
-            "plantationId" => $plantation->getId(),
+            "plantationId" => $this->existingWork->getplantation()->getId(),
             "date" => date('Y-m-d H:m:s'),
-            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "workerIds" => [],
             "note" => "test work"
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/work/add',
+            '/api/v1/work/edit',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -171,5 +185,31 @@ class CreateWorkTest extends WebTestCase
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Work type not found.', $content['message']);
+    }
+
+    public function testEditNotExistingWork(): void
+    {
+        $data = [
+            "workId" => 99,
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $this->existingWork->getplantation()->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $this->existingWork->getworkers()),
+            "note" => "test work"
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/work/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Work not found.', $content['message']);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Application\DTO;
 class WorkDTO
 {
     public function __construct(
+        public int $id,
         public int $workTypeId,
         public string $workTypeName,
         public int $plantationId,

@@ -6,9 +6,13 @@ use App\Domain\Entity\WorkType;
 use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Name;
+use App\Infrastructure\Seeder\SystemWorkTypeSeeder;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Response;
 
 class EditWorkTypeTest extends WebTestCase
@@ -34,7 +38,7 @@ class EditWorkTypeTest extends WebTestCase
     {
         $data = [
             'id' => $this->existingWorkType->getId(),
-            'name' => 'New WorkType'
+            'name' => 'Edited WorkType'
         ];
 
         $this->client->request(

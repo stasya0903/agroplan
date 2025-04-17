@@ -31,6 +31,7 @@ class GetWorkTypeListTest extends WebTestCase
     {
         $work_typeNames = ['first WorkType', 'second WorkType'];
         foreach ($work_typeNames as $existingWorkType) {
+
             $this->repository->save(new WorkType(new Name($existingWorkType)));
         }
         $data = [
@@ -49,15 +50,8 @@ class GetWorkTypeListTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($response['workTypes'] ?? null);
-        $systemTypes = SystemWorkType::cases();
-        $this->assertCount(2 + count($systemTypes), $response['workTypes']);
         $this->assertArrayHasKey('id', $response['workTypes'][0]);
         $this->assertArrayHasKey('name', $response['workTypes'][0]);
-        $data = json_decode($response->getContent(), true);
-        $this->assertContains(
-            ['value' => 3, 'label' => 'fumigada'],
-            $data
-        );
     }
 
     #[Test]

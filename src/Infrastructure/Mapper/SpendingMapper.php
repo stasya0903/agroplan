@@ -15,7 +15,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 final class SpendingMapper
 {
     public function __construct(
-        private readonly PlantationMapper $plantationMapper
+        private readonly PlantationMapper $plantationMapper,
+        private readonly WorkMapper $workMapper,
     ) {
     }
 
@@ -31,6 +32,9 @@ final class SpendingMapper
         $reflectionProperty = new \ReflectionProperty(Spending::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($spending, $entity->getId());
+        if($entity->getWork()){
+            $spending->assignToWork($this->workMapper->mapToDomain($entity->getWork()));
+        }
         return $spending;
     }
 

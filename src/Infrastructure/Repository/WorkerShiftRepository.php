@@ -33,7 +33,8 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         $items = $this->em->createQueryBuilder()
             ->select('workerShift')
             ->from(WorkerShiftEntity::class, 'workerShift')
-            ->andWhere('workerShift.work_id = (:id)')
+            ->leftJoin('workerShift.work', 'w')->addSelect('w')
+            ->andWhere('workerShift.work = (:id)')
             ->setParameter('id', $workId)
             ->getQuery()
             ->getResult();
@@ -42,6 +43,7 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         foreach ($items as $item) {
             $workerShifts[] = $this->mapper->mapToDomain($item);
         }
+
         return $workerShifts;
     }
 

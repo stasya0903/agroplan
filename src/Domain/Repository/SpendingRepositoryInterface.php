@@ -10,4 +10,5 @@ interface SpendingRepositoryInterface
     public function save(Spending $spending): void;
     public function findByWork(int $workId): ?Spending;
     public function getList(array $ids): array;
+    public function delete(int $spendingId);
 }

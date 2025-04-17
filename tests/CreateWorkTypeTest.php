@@ -6,12 +6,16 @@ use App\Domain\Entity\WorkType;
 use App\Domain\Enums\SystemWorkType;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Name;
+use App\Infrastructure\Seeder\SystemWorkTypeSeeder;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\HttpFoundation\Response;
 
-class CreateWorkListTest extends WebTestCase
+class CreateWorkTypeTest extends WebTestCase
 {
     use TableResetTrait;
 
@@ -116,5 +120,20 @@ class CreateWorkListTest extends WebTestCase
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('WorkType name used by system.', $content['message']);
+    }
+    private function runSeederCommand(): void
+    {
+        $application = new Application(self::$kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command' => 'app:seed:system-work-types --env=test',
+        ]);
+        $output = new BufferedOutput();
+
+        $exitCode = $application->run($input, $output);
+        if ($exitCode !== 0) {
+            throw new \RuntimeException('Seeder command failed: ' . $output->fetch());
+        }
     }
 }

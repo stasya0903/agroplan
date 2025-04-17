@@ -76,15 +76,20 @@ class CreateWorkUseCase
                 $workerShift->assignToWork($work);
                 $this->workerShiftRepository->save($workerShift);
             }
-            $spending = $this->spendingFactory->create(
-                $plantation,
-                SpendingType::WORK,
-                $date,
-                $work->getFullPrice(),
-                new Note()
-            );
-            $spending->assignToWork($work);
-            $this->spendingRepository->save($spending);
+
+            $price = $work->getFullPrice();
+            if($price > 0){
+                $spending = $this->spendingFactory->create(
+                    $plantation,
+                    SpendingType::WORK,
+                    $date,
+                    new Money($price),
+                    new Note()
+                );
+                $spending->assignToWork($work);
+                $this->spendingRepository->save($spending);
+            }
+
             return new CreateWorkResponse($work->getId());
         });
     }

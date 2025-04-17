@@ -75,13 +75,13 @@ class Work
         }
     }
 
-    public function getFullPrice(): Money
+    public function getFullPrice(): int
     {
         $total = 0;
         foreach ($this->workers as $worker){
             $total += $worker->getDailyRate()->getAmount();
         }
-        return new Money($total);
+        return $total;
     }
 
     public function assignSpending(Spending $spending): void

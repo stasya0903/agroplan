@@ -30,7 +30,7 @@ class SpendingRepository implements SpendingRepositoryInterface
     }
     public function findByWork(int $workId): ?Spending
     {
-        $entity = $this->em->getRepository(SpendingEntity::class)->findOneBy(['work_id' => $workId]);
+        $entity = $this->em->getRepository(SpendingEntity::class)->findOneBy(['work' => $workId]);
         if (!$entity) {
             return null;
         }
@@ -87,5 +87,16 @@ class SpendingRepository implements SpendingRepositoryInterface
             $spending[] = $this->mapper->mapToDomain($item);
         }
         return $spending;
+    }
+    public function delete(int $spendingId): void
+    {
+        $workerShift = $this->em->getRepository(SpendingEntity::class)->find($spendingId);
+
+        if (!$workerShift) {
+            throw new \DomainException("Spending with ID $spendingId not found.");
+        }
+
+        $this->em->remove($workerShift);
+        $this->em->flush();
     }
 }

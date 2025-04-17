@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Http\Request;
+namespace App\Infrastructure\Http;
 
 use App\Application\UseCase\EditWork\EditWorkRequest;
 use App\Application\UseCase\EditWork\EditWorkUseCase;
@@ -25,10 +25,9 @@ final class EditWorkController extends AbstractController
 
     public function __invoke(#[MapRequestPayload] EditWorkRequest $request): Response
     {
-        $response = ($this->useCase)($request);
-        return $this->json($response);
         try {
-
+            $response = ($this->useCase)($request);
+            return $this->json($response);
         } catch (\Throwable $e) {
             $errorResponse = [
                 'message' => $e->getMessage()

@@ -17,6 +17,7 @@ final class WorkerShiftMapper
     public function __construct(
         private readonly PlantationMapper $plantationMapper,
         private readonly WorkerMapper $workerMapper,
+        private readonly WorkMapper $workMapper,
     ) {
     }
 
@@ -29,9 +30,14 @@ final class WorkerShiftMapper
             new Money($entity->getPaymentInCents()),
             $entity->isPaid()
         );
+
+        $workerShift->setDate(new Date($entity->getDate()->format('Y-m-d H:i:s')));
         $reflectionProperty = new \ReflectionProperty(WorkerShift::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($workerShift, $entity->getId());
+        if($entity->getWork()){
+            $workerShift->assignToWork($this->workMapper->mapToDomain($entity->getWork()));
+        }
         return $workerShift;
     }
 
