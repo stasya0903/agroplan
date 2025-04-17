@@ -12,6 +12,7 @@ use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\Repository\WorkRepositoryInterface;
 use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Date;
+use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Name;
 use App\Domain\ValueObject\Note;
 use PHPUnit\Framework\Attributes\Test;
@@ -19,13 +20,15 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
-class GetWorkListTest extends WebTestCase
+class GetWorkerShiftListTest extends WebTestCase
 {
     use TableResetTrait;
 
     private KernelBrowser $client;
     private mixed $repository;
     private Plantation $plantation;
+    private Worker $worker1;
+    private Worker $worker2;
 
     protected function setUp(): void
     {
@@ -45,7 +48,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/work/list',
+            '/api/v1/worker_shift/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -54,9 +57,10 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(3,$response);
-        $this->assertIsArray($response);
-        $this->assertArrayHasKey('id', $response[0]);
+        $this->assertCount(4,$response["workerShifts"]);
+        $this->assertIsArray($response["workerShifts"]);
+        $this->assertArrayHasKey('id', $response["workerShifts"][0]);
+        $this->assertEquals(900.00, $response["totalToPay"]);
     }
 
     #[Test]
@@ -68,7 +72,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/work/list',
+            '/api/v1/worker_shift/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -77,18 +81,20 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(0, $response );
+        $this->assertCount(0,$response["workerShifts"]);
+        $this->assertIsArray($response["workerShifts"]);
+        $this->assertEquals(0, $response["totalToPay"]);
     }
 
-    public function testFilterByWorkTypeSuccess(): void
+    public function testFilterByWorkerSuccess(): void
     {
         $data = [
-            "workTypeId" => SystemWorkType::HARVEST->value
+            "workerId" => $this->worker1->getId()
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/work/list',
+            '/api/v1/worker_shift/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -97,7 +103,11 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response );
+        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertIsArray($response["workerShifts"]);
+        $this->assertEquals($this->worker1->getId(), $response["workerShifts"][0]['workerId']);
+        $this->assertEquals($this->worker1->getId(), $response["workerShifts"][1]['workerId']);
+        $this->assertEquals(500.00, $response["totalToPay"]);
     }
 
     public function testFilterByDateFromTypeSuccess(): void
@@ -108,7 +118,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/work/list',
+            '/api/v1/worker_shift/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -117,7 +127,8 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2, $response );
+        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertEquals(450.00, $response["totalToPay"]);
     }
 
     public function testFilterByDateToTypeSuccess(): void
@@ -128,7 +139,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/work/list',
+            '/api/v1/worker_shift/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -137,37 +148,67 @@ class GetWorkListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response );
+        $this->assertCount(2,$response["workerShifts"]);
+        $this->assertEquals(450.00, $response["totalToPay"]);
+    }
+    public function testFilterByPaidToTypeSuccess(): void
+    {
+        $data = [
+            "paid" => true
+        ];
+
+        $this->client->request(
+            'POST',
+            '/api/v1/worker_shift/list',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $response = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertCount(0, $response["workerShifts"]);
+        $this->assertEquals(0, $response["totalToPay"]);
     }
     public function seed(): void
     {
-        $fertilization = $this->workTypeRepository->find(SystemWorkType::FERTILIZATION->value);
-        $harvest = $this->workTypeRepository->find(SystemWorkType::HARVEST->value);
         //create plantations
         $this->plantation = new Plantation(new Name('Plantation'));
         $this->plantationRepository->save($this->plantation);
+        //create workers
 
+        $this->worker1 = new Worker(new Name('Alice'), new Money(25000));
+        $this->worker2 = new Worker(new Name('Bob'), new Money(20000));
+        $this->workerRepo->save($this->worker1);
+        $this->workerRepo->save($this->worker2);
 
         // Create Works on different dates
-        $this->createWork('2025-04-10 00:00:00', $fertilization, $this->plantation, []);
-        $this->createWork('2025-04-25 00:00:00', $fertilization, $this->plantation, []);
-        $this->createWork('2025-06-01 00:00:00', $harvest, $this->plantation, []);
+        $this->createWork('2025-04-10 00:00:00', $this->plantation, [$this->worker1, $this->worker2]); //4500
+        $this->createWork('2025-04-25 00:00:00', $this->plantation, [$this->worker1]); // 2500
+        $this->createWork('2025-06-01 00:00:00', $this->plantation, [$this->worker2]); // 2000
     }
 
     private function createWork(
         string $date,
-        WorkType $workType,
         Plantation $plantation,
         array $workers
     ): void {
-        $work = new Work(
-            $workType,
-            $plantation,
-            new Date($date),
-            $workers,
-            new Note('test')
+        $data = [
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $plantation->getId(),
+            "date" => $date,
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "test work"
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
         );
-
-        $this->repository->save($work);
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 }

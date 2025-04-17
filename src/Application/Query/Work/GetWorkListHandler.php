@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Query;
+namespace App\Application\Query\Work;
 
 use App\Application\DTO\WorkDTO;
 use App\Application\DTO\WorkerDTO;

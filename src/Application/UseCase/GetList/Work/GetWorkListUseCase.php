@@ -2,20 +2,9 @@
 
 namespace App\Application\UseCase\GetList\Work;
 
-use App\Application\DTO\PlantationDTO;
-use App\Application\DTO\WorkerDTO;
-use App\Application\Query\GetWorkListHandler;
-use App\Application\Query\GetWorkListQuery;
-use App\Application\UseCase\GetList\Plantation\GetPlantationListRequest;
-use App\Application\UseCase\GetList\Plantation\GetPlantationListResponse;
-use App\Application\UseCase\GetList\Plantation\GetPlantationListUseCase;
-use App\Application\UseCase\GetList\Worker\GetWorkerListRequest;
-use App\Application\UseCase\GetList\Worker\GetWorkerListResponse;
-use App\Domain\Entity\Plantation;
-use App\Domain\Entity\Worker;
-use App\Domain\Repository\WorkerRepositoryInterface;
+use App\Application\Query\Work\GetWorkListHandler;
+use App\Application\Query\Work\GetWorkListQuery;
 use App\Domain\ValueObject\Date;
-use App\Infrastructure\Repository\PlantationRepository;
 
 class GetWorkListUseCase
 {
