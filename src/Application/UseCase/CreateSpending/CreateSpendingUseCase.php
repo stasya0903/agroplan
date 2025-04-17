@@ -16,7 +16,6 @@ class CreateSpendingUseCase
         private readonly SpendingFactoryInterface $factory,
         private readonly SpendingRepositoryInterface $repository,
         private readonly PlantationRepositoryInterface $plantationRepository,
-
     ) {
     }
 
@@ -26,7 +25,7 @@ class CreateSpendingUseCase
         if (!$spendingType) {
             throw new \DomainException('Spending type not found.');
         }
-        if($spendingType === SpendingType::WORK){
+        if ($spendingType === SpendingType::WORK) {
             throw new \DomainException('Please create work for Work spending type.');
         }
         $plantation = $this->plantationRepository->find($request->plantationId);
@@ -39,7 +38,7 @@ class CreateSpendingUseCase
             new Date($request->date),
             Money::fromFloat($request->amount),
             new Note($request->note)
-            );
+        );
         $this->repository->save($spending);
         return new CreateSpendingResponse($spending->getId());
     }
