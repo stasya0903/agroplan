@@ -19,6 +19,7 @@ class Spending
         private Money $amount,
         private Note $info
     ) {
+        $this->validate();
     }
 
     public function setPlantation(Plantation $plantation): void
@@ -88,5 +89,11 @@ class Spending
     public function getInfo(): ?Note
     {
         return $this->info;
+    }
+    private function validate(): void
+    {
+        if ($this->type === SpendingType::OTHER && !$this->info->getValue()) {
+            throw new \DomainException('Note is required for OTHER spending type.');
+        }
     }
 }

@@ -112,6 +112,7 @@ class EditWorkerTest extends WebTestCase
         $this->assertEquals('Worker name must be unique.', $content['message']);
     }
 
+    #[Test]
     public function testEditWorkerWithZeroRate(): void
     {
         $data = [
@@ -159,6 +160,7 @@ class EditWorkerTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Amount must be greater than zero.', $content['message']);
     }
+    #[Test]
     public function testEditNotExistingWorker(): void
     {
         $data = [

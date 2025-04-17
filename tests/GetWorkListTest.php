@@ -79,7 +79,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->assertCount(0, $response);
     }
-
+    #[Test]
     public function testFilterByWorkTypeSuccess(): void
     {
         $data = [
@@ -99,7 +99,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->assertCount(1, $response);
     }
-
+    #[Test]
     public function testFilterByDateFromTypeSuccess(): void
     {
         $data = [
@@ -119,7 +119,7 @@ class GetWorkListTest extends WebTestCase
 
         $this->assertCount(2, $response);
     }
-
+    #[Test]
     public function testFilterByDateToTypeSuccess(): void
     {
         $data = [

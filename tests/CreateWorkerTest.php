@@ -101,6 +101,7 @@ class CreateWorkerTest extends WebTestCase
         $this->assertEquals('Worker name must be unique.', $content['message']);
     }
 
+    #[Test]
     public function testCreateWorkerWithZeroRate(): void
     {
         $data = [
@@ -124,6 +125,7 @@ class CreateWorkerTest extends WebTestCase
         $this->assertEquals('Amount cannot be empty', $content['message']);
     }
 
+    #[Test]
     public function testCreateWorkerWithNegativeRate(): void
     {
         $data = [

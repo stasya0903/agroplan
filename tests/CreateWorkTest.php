@@ -132,6 +132,7 @@ class CreateWorkTest extends WebTestCase
         $this->assertEquals('Worker not found.', $content['message']);
     }
 
+    #[Test]
     public function testCreateWorkWithNotExistingPlantation(): void
     {
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));

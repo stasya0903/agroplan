@@ -60,7 +60,7 @@ class SetPaidWorkerShiftsTest extends WebTestCase
         $workerShift = $this->workerShiftRepository->find($shift->getId());
         $this->assertTrue($workerShift->isPaid());
     }
-
+    #[Test]
     public function testSetPaidEmptyWorkerShifts(): void
     {
         $data = [
@@ -80,7 +80,7 @@ class SetPaidWorkerShiftsTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Chose worker shifts to be paid', $content['message']);
     }
-
+    #[Test]
     public function testSetPaidWorkerShiftsWithWrongId(): void
     {
         $data = [

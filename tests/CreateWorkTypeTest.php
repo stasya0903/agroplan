@@ -100,6 +100,7 @@ class CreateWorkTypeTest extends WebTestCase
         $this->assertEquals('WorkType name must be unique.', $content['message']);
     }
 
+
     public function testCreateWorkTypeWithSystemName(): void
     {
         $data = [

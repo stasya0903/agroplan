@@ -108,6 +108,7 @@ class EditWorkTypeTest extends WebTestCase
         $this->assertEquals('WorkType name must be unique.', $content['message']);
     }
 
+    #[Test]
     public function testEditNotExistingWorkType(): void
     {
         $data = [
@@ -152,6 +153,7 @@ class EditWorkTypeTest extends WebTestCase
         $this->assertEquals('WorkType name used by system.', $content['message']);
     }
 
+    #[Test]
     public function testEditSystemWorkType(): void
     {
         $data = [

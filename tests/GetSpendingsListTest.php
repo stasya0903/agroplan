@@ -83,6 +83,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertEquals(0, $response['total']);
     }
 
+    #[Test]
     public function testFilterBySpendingTypeSuccess(): void
     {
         $data = [
@@ -104,6 +105,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertEquals(957.33, $response['total']);
     }
 
+    #[Test]
     public function testFilterByDateFromTypeSuccess(): void
     {
         $data = [
@@ -125,6 +127,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertEquals(2457.33, $response['total']);
     }
 
+    #[Test]
     public function testFilterByDateToTypeSuccess(): void
     {
         $data = [

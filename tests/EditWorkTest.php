@@ -161,6 +161,7 @@ class EditWorkTest extends WebTestCase
         $this->assertEquals('Worker not found.', $content['message']);
     }
 
+    #[Test]
     public function testCreateWorkWithNotExistingPlantation(): void
     {
         $data = [
@@ -187,6 +188,7 @@ class EditWorkTest extends WebTestCase
         $this->assertEquals('Work type not found.', $content['message']);
     }
 
+    #[Test]
     public function testEditNotExistingWork(): void
     {
         $data = [
