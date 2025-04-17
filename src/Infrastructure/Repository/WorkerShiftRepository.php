@@ -136,4 +136,16 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
         $this->em->remove($workerShift);
         $this->em->flush();
     }
+
+    public function setPaid(array $workerShiftIds): bool
+    {
+        return $this->em->createQueryBuilder()
+            ->update(WorkerShiftEntity::class, 'workerShift')
+            ->set('workerShift.paid', ':paid')
+            ->where('workerShift.id IN (:ids)')
+            ->setParameter('ids', $workerShiftIds)
+            ->setParameter('paid', true)
+            ->getQuery()
+            ->getResult();
+    }
 }
