@@ -25,7 +25,7 @@ class EditSpendingUseCase
     public function __invoke(EditSpendingRequest $request): EditSpendingResponse
     {
         $spending = $this->spendingRepository->find($request->spendingId);
-        if(!$spending){
+        if (!$spending) {
             throw new \DomainException('Spending not found.');
         }
         $spendingType = SpendingType::tryFrom($request->spendingTypeId);
@@ -46,17 +46,17 @@ class EditSpendingUseCase
         $spending->setAmount(Money::fromFloat($request->amount));
         $spending->setInfo(new Note($request->note));
         $this->spendingRepository->save($spending);
-        return new EditSpendingResponse(new SpendingDTO(
-            $spending->getId(),
-            $spending->getDate()->getValue()->format('Y-m-d'),
-            $spending->getPlantation()->getId(),
-            $spending->getPlantation()->getName()->getValue(),
-            $spending->getType()->value,
-            $spending->getType()->label(),
-            $spending->getAmount()->getAmountAsFloat(),
-            $spending->getInfo()->getValue()
-        ));
-
-        
+        return new EditSpendingResponse(
+            new SpendingDTO(
+                $spending->getId(),
+                $spending->getDate()->getValue()->format('Y-m-d'),
+                $spending->getPlantation()->getId(),
+                $spending->getPlantation()->getName()->getValue(),
+                $spending->getType()->value,
+                $spending->getType()->label(),
+                $spending->getAmount()->getAmountAsFloat(),
+                $spending->getInfo()->getValue()
+            )
+        );
     }
 }

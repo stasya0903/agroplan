@@ -8,6 +8,10 @@ class SpendingTypeListUseCase
 {
     public function __invoke(): SpendingTypeListResponse
     {
-        return new SpendingTypeListResponse(SpendingType::options());
+        $options = SpendingType::options();
+        $options = array_filter( $options, function ( $option ) {
+           return $option['value'] !== SpendingType::WORK->value;
+        } );
+        return new SpendingTypeListResponse($options);
     }
 }

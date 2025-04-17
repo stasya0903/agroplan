@@ -32,6 +32,8 @@ class EditWorkerUseCase
         $worker->setDailyRate(Money::fromFloat($request->dailyRate));
         $this->workerRepository->save($worker);
 
+        //todo update unpaid worker shifts
+
         return new EditWorkerResponse(
             $worker->getId(),
             $worker->getName()->getValue(),
