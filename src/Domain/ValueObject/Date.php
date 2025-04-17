@@ -18,6 +18,8 @@ final class Date
             throw new InvalidArgumentException("Invalid date format. Expected: $format");
         }
 
+        //2025-05-16 00:00:00
+        //2025-05-15 00:00:00
         $this->value = $parsed;
     }
 
