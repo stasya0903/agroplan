@@ -29,7 +29,7 @@ class SetPaidWorkerShiftsUseCase
      */
     public function __invoke(SetPaidWorkerShiftsRequest $request): SetPaidWorkerShiftsResponse
     {
-        if(count($request->workerShiftIds) === 0){
+        if (count($request->workerShiftIds) === 0) {
             throw new InvalidArgumentException('Chose worker shifts to be paid');
         }
         foreach ($request->workerShiftIds as $id) {
