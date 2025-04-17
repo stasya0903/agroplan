@@ -102,8 +102,8 @@ class WorkRepository implements WorkRepositoryInterface
         foreach ($entity->getWorkerShifts() as $worker) {
             $work->addWorkerShift($this->workerShiftMapper->mapToDomain($worker));
         }
-        if($entity->getSpending()){
-            $work->assignSpending($this->spendingMapper->mapToDomain($entity->getSpending()));
+            if ($entity->getSpending()) {
+                $work->assignSpending($this->spendingMapper->mapToDomain($entity->getSpending()));
         }
         return $work;
     }

@@ -26,12 +26,12 @@ class GetWorkTypeListTest extends WebTestCase
             WorkTypeRepositoryInterface::class
         );
     }
+
     #[Test]
     public function testGetAllWorkTypesSuccess(): void
     {
         $work_typeNames = ['first WorkType', 'second WorkType'];
         foreach ($work_typeNames as $existingWorkType) {
-
             $this->repository->save(new WorkType(new Name($existingWorkType)));
         }
         $data = [
@@ -67,7 +67,7 @@ class GetWorkTypeListTest extends WebTestCase
             $ids[] = $work_type->getId();
         }
         $data = [
-            'ids' => [$ids[0],$ids[2]],
+            'ids' => [$ids[0], $ids[2]],
         ];
 
         $this->client->request(
