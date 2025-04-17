@@ -45,6 +45,7 @@ class Spending
     public function setInfo(Note $info): void
     {
         $this->info = $info;
+        $this->validate();
     }
 
     public function getWork(): ?Work
