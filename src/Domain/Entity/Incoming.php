@@ -29,6 +29,46 @@ class Incoming
 
     }
 
+    public function setPrice(Money $price): void
+    {
+        $this->price = $price;
+    }
+
+    public function setBuyerName(Name $buyerName): void
+    {
+        $this->buyerName = $buyerName;
+    }
+
+    public function setIncomingTerm(IncomingTermType $incomingTerm): void
+    {
+        $this->incomingTerm = $incomingTerm;
+    }
+
+    public function setWeight(Weight $weight): void
+    {
+        $this->weight = $weight;
+    }
+
+    public function setInfo(Note $info): void
+    {
+        $this->info = $info;
+    }
+
+    public function setAmount(Money $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function setDate(Date $date): void
+    {
+        $this->date = $date;
+    }
+
+    public function setPlantation(Plantation $plantation): void
+    {
+        $this->plantation = $plantation;
+    }
+
     public function getDatePaid(): ?Date
     {
         return $this->datePaid;
@@ -89,4 +129,12 @@ class Incoming
         $this->datePaid = $datePaid;
         $this->paid = true;
     }
+
+    public function setUnpaid(): void
+    {
+        $this->datePaid = null;
+        $this->paid = false;
+    }
+
+
 }

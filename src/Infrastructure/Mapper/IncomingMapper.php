@@ -37,7 +37,7 @@ final class IncomingMapper
 
         );
         if($entity->getDatePaid()){
-            $incoming->setPaid(new Date($entity->getDatePaid()));
+            $incoming->setPaid(new Date($entity->getDatePaid()->format('Y-m-d H:i:s')));
         }
         $reflectionProperty = new \ReflectionProperty(Incoming::class, 'id');
         $reflectionProperty->setAccessible(true);
