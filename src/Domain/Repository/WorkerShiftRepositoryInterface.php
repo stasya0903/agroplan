@@ -17,4 +17,6 @@ interface WorkerShiftRepositoryInterface
     public function delete(int $workerShiftId): void;
 
     public function setPaid(array $workerShiftIds): bool;
+
+    public function getForWorker(?int $workerId): array;
 }

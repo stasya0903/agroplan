@@ -148,4 +148,28 @@ class WorkerShiftRepository implements WorkerShiftRepositoryInterface
             ->getQuery()
             ->getResult();
     }
+
+    public function getForWorker(?int $workerId): array
+    {
+        $items = $this->em->createQueryBuilder()
+            ->select('workerShift')
+            ->from(WorkerShiftEntity::class, 'workerShift')
+            ->leftJoin('workerShift.worker', 'w')->addSelect('w')
+            ->addSelect('w')
+            ->leftJoin('workerShift.work', 'wk')
+            ->andWhere('workerShift.worker = (:id)')
+            ->setParameter('id', $workerId)
+            ->getQuery()
+            ->getResult();
+
+        $workerShifts = [];
+        foreach ($items as $item) {
+            $workEntity = $item->getWork();
+            $workerShift = $this->mapper->mapToDomain($item);
+            $workerShift->assignToWork($this->workMapper->mapToDomain($workEntity));
+            $workerShifts[] = $workerShift;
+        }
+
+        return $workerShifts;
+    }
 }
