@@ -28,7 +28,7 @@ class GetWorkListHandler
         $types = [];
 
         if ($query->getWorkTypeId() !== null) {
-            $sql .= 'WHERE w.work_type_id = :workTypeId';
+            $sql .= ' WHERE w.work_type_id = :workTypeId';
             $params['workTypeId'] = $query->getWorkTypeId();
             $types['workTypeId'] = Types::INTEGER;
         }

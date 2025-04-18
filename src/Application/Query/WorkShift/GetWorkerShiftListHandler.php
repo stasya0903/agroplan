@@ -34,7 +34,7 @@ class GetWorkerShiftListHandler
         $types = [];
 
         if ($query->getWorkerId() !== null) {
-            $sql .= 'WHERE ws.worker_id = :workerId';
+            $sql .= ' WHERE ws.worker_id = :workerId';
             $params['workerId'] = $query->getWorkerId();
             $types['workerId'] = Types::INTEGER;
         }
