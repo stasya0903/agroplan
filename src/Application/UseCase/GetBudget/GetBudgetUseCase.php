@@ -27,14 +27,14 @@ class GetBudgetUseCase
     {
         $dateFrom = $request->dateFrom ? new Date($request->dateFrom . ' 00:00:00') : null;
         $dateTo = $request->dateTo ? new Date($request->dateTo . ' 23:59:59') : null;
-        $queryIncoming = new GetIncomingListQuery($request->plantationId, $dateFrom, $dateTo,);
+        $queryIncoming = new GetIncomingListQuery($request->plantationId, $dateFrom, $dateTo);
         $incoming = $this->getIncomingListHandler->handle($queryIncoming);
         $totalIncoming = array_reduce($incoming, function ($result, $item) {
             $result += Money::fromFloat($item->amount)->getAmount();
             return $result;
         }, 0);
         $totalFloatIncoming = $totalIncoming > 0 ? (new Money($totalIncoming))->getAmountAsFloat() : 0;
-        $querySpending = new GetSpendingListQuery(null, $request->plantationId, $dateFrom, $dateTo,);
+        $querySpending = new GetSpendingListQuery(null, $request->plantationId, $dateFrom, $dateTo);
         $spending = $this->getSpendingListHandler->handle($querySpending);
         $totalSpending = array_reduce($spending, function ($result, $item) {
             $result += Money::fromFloat($item->amount)->getAmount();
@@ -42,7 +42,6 @@ class GetBudgetUseCase
         }, 0);
         $totalFloatSpending = $totalSpending > 0 ? (new Money($totalSpending))->getAmountAsFloat() : 0;
         $profit = ($totalIncoming - $totalSpending) / 100;
-
 
 
         return new GetBudgetResponse(

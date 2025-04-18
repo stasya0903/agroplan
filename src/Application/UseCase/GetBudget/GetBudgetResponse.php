@@ -10,7 +10,6 @@ class GetBudgetResponse
         public float $totalSpend,
         public float $totalIncome,
         public float $profit,
-
     ) {
     }
 }
