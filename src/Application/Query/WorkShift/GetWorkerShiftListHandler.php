@@ -29,36 +29,35 @@ class GetWorkerShiftListHandler
                 wr.name as worker_name, wr.daily_rate_in_cents
                 FROM worker_shift ws 
                 LEFT JOIN plantations pl ON ws.plantation_id = pl.id 
-                LEFT JOIN workers wr ON ws.worker_id = wr.id
-                 where 1 = 1';
+                LEFT JOIN workers wr ON ws.worker_id = wr.id';
         $params = [];
         $types = [];
 
         if ($query->getWorkerId() !== null) {
-            $sql .= ' AND ws.worker_id = :workerId';
+            $sql .= 'WHERE ws.worker_id = :workerId';
             $params['workerId'] = $query->getWorkerId();
             $types['workerId'] = Types::INTEGER;
         }
 
         if ($query->getPlantationId() !== null) {
-            $sql .= ' AND ws.plantation_id = :plantationId';
+            $sql .= count($params) ? ' AND ws.plantation_id = :plantationId' : ' WHERE ws.plantation_id = :plantationId';
             $params['plantationId'] = $query->getPlantationId();
             $types['plantationId'] = Types::STRING;
         }
 
         if ($query->getDateFrom() !== null) {
-            $sql .= ' AND ws.date >= :dateFrom';
+            $sql .= count($params) ? ' AND ws.date >= :dateFrom' : ' WHERE ws.date >= :dateFrom';
             $params['dateFrom'] = $query->getDateFrom()->getValue();
             $types['dateFrom'] = Types::DATETIME_IMMUTABLE;
         }
 
         if ($query->getDateTo() !== null) {
-            $sql .= ' AND ws.date <= :dateTo';
+            $sql .= count($params) ? ' AND ws.date <= :dateTo' : ' WHERE ws.date <= :dateTo';
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
         if ($query->getPaid() !== null) {
-            $sql .= ' AND ws.paid = :paid';
+            $sql .= count($params) ? ' AND ws.paid = :paid' : ' WHERE ws.paid = :paid';
             $params['paid'] = $query->getPaid();
             $types['paid'] = Types::BOOLEAN;
         }

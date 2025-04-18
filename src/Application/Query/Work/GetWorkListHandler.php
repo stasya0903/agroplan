@@ -23,31 +23,30 @@ class GetWorkListHandler
         $sql = 'SELECT w.id, w.date, w.note, w.plantation_id, w.work_type_id, pl.name as plantation_name, wt.name as work_type_name 
                 FROM work w 
                 LEFT JOIN plantations pl ON w.plantation_id = pl.id 
-                LEFT JOIN work_types wt ON w.work_type_id = wt.id
-                 where 1 = 1';
+                LEFT JOIN work_types wt ON w.work_type_id = wt.id';
         $params = [];
         $types = [];
 
         if ($query->getWorkTypeId() !== null) {
-            $sql .= ' AND w.work_type_id = :workTypeId';
+            $sql .= 'WHERE w.work_type_id = :workTypeId';
             $params['workTypeId'] = $query->getWorkTypeId();
             $types['workTypeId'] = Types::INTEGER;
         }
 
         if ($query->getPlantationId() !== null) {
-            $sql .= ' AND w.plantation_id = :plantationId';
+            $sql .= count($params) ? ' AND w.plantation_id = :plantationId' : ' WHERE w.plantation_id = :plantationId';
             $params['plantationId'] = $query->getPlantationId();
             $types['plantationId'] = Types::STRING;
         }
 
         if ($query->getDateFrom() !== null) {
-            $sql .= ' AND w.date >= :dateFrom';
+            $sql .= count($params) ? ' AND w.date >= :dateFrom' : ' WHERE w.date >= :dateFrom';
             $params['dateFrom'] = $query->getDateFrom()->getValue();
             $types['dateFrom'] = Types::DATETIME_IMMUTABLE;
         }
 
         if ($query->getDateTo() !== null) {
-            $sql .= ' AND w.date <= :dateTo';
+            $sql .= count($params) ? ' AND w.date <= :dateTo' : ' WHERE w.date <= :dateTo';
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }

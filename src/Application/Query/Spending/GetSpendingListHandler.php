@@ -31,30 +31,30 @@ class GetSpendingListHandler
                 pl.name as plantation_name
                 FROM spending s
                 LEFT JOIN plantations pl ON s.plantation_id = pl.id 
-                 where 1 = 1';
+                ';
         $params = [];
         $types = [];
 
         if ($query->getSpendingTypeId() !== null) {
-            $sql .= ' AND s.type = :typeId';
+            $sql .= ' WHERE s.type = :typeId';
             $params['typeId'] = $query->getSpendingTypeId();
             $types['typeId'] = Types::INTEGER;
         }
 
         if ($query->getPlantationId() !== null) {
-            $sql .= ' AND s.plantation_id = :plantationId';
+            $sql .= count($params) ? ' AND s.plantation_id = :plantationId' : ' WHERE s.plantation_id = :plantationId';
             $params['plantationId'] = $query->getPlantationId();
             $types['plantationId'] = Types::STRING;
         }
 
         if ($query->getDateFrom() !== null) {
-            $sql .= ' AND s.date >= :dateFrom';
+            $sql .= count($params) ? ' AND s.date >= :dateFrom' : ' WHERE s.date >= :dateFrom';
             $params['dateFrom'] = $query->getDateFrom()->getValue();
             $types['dateFrom'] = Types::DATETIME_IMMUTABLE;
         }
 
         if ($query->getDateTo() !== null) {
-            $sql .= ' AND s.date <= :dateTo';
+            $sql .= count($params) ? ' AND s.date <= :dateTo' : ' WHERE s.date <= :dateTo';
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
