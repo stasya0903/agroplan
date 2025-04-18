@@ -28,7 +28,7 @@ class GetIncomingListHandler
                 ';
         $params = [];
         $types = [];
-        
+
         if ($query->getPlantationId() !== null) {
             $sql .= count($params) ? ' AND i.plantation_id = :plantationId' : ' WHERE i.plantation_id = :plantationId';
             $params['plantationId'] = $query->getPlantationId();
@@ -61,7 +61,7 @@ class GetIncomingListHandler
             $row['buyer_name'],
             (new Money($row['price_in_cents']))->getAmountAsFloat(),
             $row['paid'],
-            $row['paid'] ? new Date($row['datePaid']): null
+            $row['paid'] ? new Date($row['datePaid']) : null
         ), $result);
     }
 }

@@ -84,6 +84,7 @@ class GetIncomingListTest extends WebTestCase
 
         $this->assertCount(0, $response['incoming']);
     }
+
     #[Test]
     public function testFilterByDateFromTypeSuccess(): void
     {
@@ -105,6 +106,7 @@ class GetIncomingListTest extends WebTestCase
         $this->assertCount(2, $response['incoming']);
         $this->assertEquals(12000, $response['total']);
     }
+
     #[Test]
     public function testFilterByDateToTypeSuccess(): void
     {
@@ -136,7 +138,6 @@ class GetIncomingListTest extends WebTestCase
 
     private function createIncoming(
         string $date
-        
     ): void {
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));
         $this->plantationRepository->save($plantation);

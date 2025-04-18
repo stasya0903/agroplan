@@ -38,9 +38,9 @@ class GetIncomingListUseCase
 
 
         $averagePrice = count($incoming)
-        ? array_reduce($incoming, fn($sum, $item) => $sum + $item->price, 0) / count($incoming)
-        : 0;
-       
+            ? array_reduce($incoming, fn($sum, $item) => $sum + $item->price, 0) / count($incoming)
+            : 0;
+
         return new GetIncomingListResponse($incoming, $totalFloat, $averagePrice);
     }
 }

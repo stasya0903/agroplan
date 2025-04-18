@@ -45,7 +45,7 @@ class IncomingEntity
     #[ORM\Column(type: 'boolean')]
     private bool $paid;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE,  nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $datePaid;
 
     public function getId(): ?int
@@ -170,7 +170,6 @@ class IncomingEntity
         int $priceInCents,
         bool $paid,
         ?\DateTimeImmutable $datePaid
-
     ) {
         $this->plantation = $plantation;
         $this->date = $date;

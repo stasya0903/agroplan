@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
-
 use App\Application\UseCase\GetList\Incoming\GetIncomingListRequest;
 use App\Application\UseCase\GetList\Incoming\GetIncomingListUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

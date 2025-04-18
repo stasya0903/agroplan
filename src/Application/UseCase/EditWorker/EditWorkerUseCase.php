@@ -39,10 +39,10 @@ class EditWorkerUseCase
             $this->workerRepository->save($worker);
 
             $newDailyRate = $worker->getDailyRate()->getAmount();
-            if($oldDailyRate !== $newDailyRate) {
+            if ($oldDailyRate !== $newDailyRate) {
                 $shifts = $this->workerShiftRepository->getForWorker($worker->getId());
                 foreach ($shifts as $shift) {
-                    if(!$shift->isPaid() && $shift->getPayment()->getAmount() === $oldDailyRate) {
+                    if (!$shift->isPaid() && $shift->getPayment()->getAmount() === $oldDailyRate) {
                         $shift->setPayment(new Money($newDailyRate));
                         $this->workerShiftRepository->save($shift);
                     }
@@ -54,6 +54,5 @@ class EditWorkerUseCase
                 $worker->getDailyRate()->getAmountAsFloat()
             );
         });
-
     }
 }

@@ -41,7 +41,7 @@ class EditIncomingUseCase
         if (!$incomingType) {
             throw new \DomainException('Incoming term type not found.');
         }
-        if($request->paid && !$request->datePaid){
+        if ($request->paid && !$request->datePaid) {
             throw new \DomainException('To pay incoming please add paid date.');
         }
 
@@ -52,7 +52,7 @@ class EditIncomingUseCase
         $incoming->setPrice($price = Money::fromFloat($request->price));
         $incoming->setIncomingTerm($incomingType);
         $incoming->setBuyerName(new Name($request->buyerName));
-        if($request->paid){
+        if ($request->paid) {
             $incoming->setPaid(new Date($request->datePaid));
         } else {
             $incoming->setUnpaid();

@@ -16,7 +16,7 @@ enum IncomingTermType: int
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::CONTADO => 'Contado',
             self::OCHO_DIAS => '8 días',
             self::QUINCE_DIAS => '15 días',

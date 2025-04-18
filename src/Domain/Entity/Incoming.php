@@ -26,7 +26,6 @@ class Incoming
         private ?bool $paid = false,
         private ?Date $datePaid = null,
     ) {
-
     }
 
     public function setPrice(Money $price): void
@@ -135,6 +134,4 @@ class Incoming
         $this->datePaid = null;
         $this->paid = false;
     }
-
-
 }

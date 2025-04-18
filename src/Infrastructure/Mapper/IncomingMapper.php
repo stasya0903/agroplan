@@ -34,9 +34,8 @@ final class IncomingMapper
             new Name($entity->getBuyerName()),
             new Money($entity->getPriceInCents()),
             $entity->getPaid()
-
         );
-        if($entity->getDatePaid()){
+        if ($entity->getDatePaid()) {
             $incoming->setPaid(new Date($entity->getDatePaid()->format('Y-m-d H:i:s')));
         }
         $reflectionProperty = new \ReflectionProperty(Incoming::class, 'id');

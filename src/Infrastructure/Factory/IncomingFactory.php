@@ -18,7 +18,6 @@ use App\Domain\ValueObject\Weight;
 
 class IncomingFactory implements IncomingFactoryInterface
 {
-
     public function create(
         Plantation $plantation,
         Date $date,
