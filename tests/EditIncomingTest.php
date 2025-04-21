@@ -54,7 +54,7 @@ class EditIncomingTest extends WebTestCase
         $response = json_decode($response->getContent(), true)['incoming'];
 
         $this->assertArrayHasKey('incomingId', $response);
-        $incoming = $this->repository->find($response['id']);
+        $incoming = $this->repository->find($response['incomingId']);
 
         $this->assertEquals($data['price'], $incoming->getPrice()->getAmountAsFloat());
         $this->assertEquals($data['note'], $incoming->getInfo()->getValue());
