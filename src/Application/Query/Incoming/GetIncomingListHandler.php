@@ -61,7 +61,7 @@ class GetIncomingListHandler
             $row['buyer_name'],
             (new Money($row['price_in_cents']))->getAmountAsFloat(),
             $row['paid'],
-            $row['paid'] ? new Date($row['datePaid']) : null
+            $row['paid'] ? new Date($row['date_paid']) : null
         ), $result);
     }
 }

@@ -7,10 +7,10 @@ class SpendingDTO
     public function __construct(
         public int $id,
         public string $date,
-        public string $plantationId,
+        public int $plantationId,
         public string $plantationName,
         public int $spendingTypeId,
-        public string $SpendingName,
+        public string $spendingName,
         public float $amount,
         public ?string $note
     ) {
