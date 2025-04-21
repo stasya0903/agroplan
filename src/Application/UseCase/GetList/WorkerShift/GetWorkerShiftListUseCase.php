@@ -34,7 +34,7 @@ class GetWorkerShiftListUseCase
         );
         $workShifts = $this->getNewsHandler->handle($query);
         $totalToPayInCents = array_reduce($workShifts, function ($result, $item) {
-            if(!$item->paid) {
+            if (!$item->paid) {
                 $result += Money::fromFloat($item->payment)->getAmount();
             }
             return $result;
