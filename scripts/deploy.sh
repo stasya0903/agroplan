@@ -16,7 +16,7 @@ NEW_RELEASE_PATH="$DEPLOY_PATH/$TIMESTAMP"
 sudo mkdir -p $NEW_RELEASE_PATH
 
 # Clone the project into the new release directory
-git clone git@github.com:stasya0902/agroplan.git $NEW_RELEASE_PATH
+sudo git clone git@github.com:stasya0902/agroplan.git $NEW_RELEASE_PATH
 
 # If there is an existing current release, save it as the previous version
 if [ -L "$CURRENT_PATH" ]; then
