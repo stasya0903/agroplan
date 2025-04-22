@@ -1,0 +1,30 @@
+name: Deploy to Ubuntu Server
+
+on:
+  push:
+    branches:
+      - master  # Trigger deployment only on push to the master branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key for server
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy application to server
+        run: |
+          chmod +x ./scripts/deploy.sh  # Make the deploy script executable
+          ./scripts/deploy.sh  # Run the deploy script
+
+      - name: Restart Nginx
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} 'sudo systemctl restart nginx'
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}  # Add your server IP address as a secret

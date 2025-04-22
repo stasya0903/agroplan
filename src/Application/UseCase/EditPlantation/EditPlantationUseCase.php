@@ -22,7 +22,7 @@ class EditPlantationUseCase
 
         if (
             $this->plantationRepository->existsByName($request->name) &&
-            $request->name !== $plantation->getName()
+            $request->name !== $plantation->getName()->getValue()
         ) {
             throw new \DomainException('Plantation name must be unique.');
         }

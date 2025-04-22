@@ -26,7 +26,7 @@ class EditWorkTypeUseCase
         if (!$workType) {
             throw new \DomainException('WorkType not found.');
         }
-        if ($this->repository->existsByName($request->name) && $request->name !== $workType->getName()) {
+        if ($this->repository->existsByName($request->name) && $request->name !== $workType->getName()->getValue()) {
             throw new \DomainException('WorkType name must be unique.');
         }
         $workType->rename(new Name($request->name));

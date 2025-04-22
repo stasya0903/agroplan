@@ -27,7 +27,7 @@ class EditWorkerUseCase
 
         if (
             $this->workerRepository->existsByName($request->name) &&
-            $request->name !== $worker->getName()
+            $request->name !== $worker->getName()->getValue()
         ) {
             throw new \DomainException('Worker name must be unique.');
         }
