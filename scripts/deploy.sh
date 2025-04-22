@@ -1,4 +1,7 @@
 #!/bin/bash
+# Ensure SSH agent is running and the key is added
+eval $(ssh-agent -s)
+ssh-add /home/ubuntu/.ssh/id_rsa
 
 # Directories for releases and the current version
 DEPLOY_PATH="/var/www/agroplan/releases"
@@ -16,7 +19,7 @@ NEW_RELEASE_PATH="$DEPLOY_PATH/$TIMESTAMP"
 sudo mkdir -p $NEW_RELEASE_PATH
 
 # Clone the project into the new release directory
-sudo git clone git@github.com:stasya0903/agroplan.git $NEW_RELEASE_PATH
+GIT_SSH_COMMAND="ssh -i /home/ubuntu/.ssh/id_rsa" sudo git clone git@github.com:stasya0903/agroplan.git $NEW_RELEASE_PATH
 
 # If there is an existing current release, save it as the previous version
 if [ -L "$CURRENT_PATH" ]; then
