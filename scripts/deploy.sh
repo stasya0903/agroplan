@@ -13,7 +13,7 @@ TIMESTAMP=$(date +'%d-%m-%Y_%H:%M:%S')
 
 # Create a new release directory
 NEW_RELEASE_PATH="$DEPLOY_PATH/$TIMESTAMP"
-mkdir -p $NEW_RELEASE_PATH
+sudo mkdir -p $NEW_RELEASE_PATH
 
 # Clone the project into the new release directory
 git clone git@github.com:stasya0902/agroplan.git $NEW_RELEASE_PATH
@@ -26,8 +26,8 @@ if [ -L "$CURRENT_PATH" ]; then
 fi
 
 # Remove the old symbolic link and create a new one for the current version
-rm -f $CURRENT_PATH
-ln -s $NEW_RELEASE_PATH $CURRENT_PATH
+sudo rm -f $CURRENT_PATH
+sudo ln -s $NEW_RELEASE_PATH $CURRENT_PATH
 
 # Update the Nginx configuration
 if [ -L "$NGINX_ENABLED_PATH" ]; then
