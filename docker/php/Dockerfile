@@ -45,7 +45,8 @@ RUN docker-php-ext-install -j$(getconf _NPROCESSORS_ONLN) \
     mysqli pdo pdo_mysql \
     pdo_mysql
 
-
+# Install PostgreSQL client
+RUN apk add --no-cache postgresql-client
 
 COPY --chown=www-data:www-data ./ /data/agroplan
 RUN chown -R www-data:www-data /data/agroplan

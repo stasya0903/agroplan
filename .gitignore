@@ -12,3 +12,14 @@
 ###< symfony/framework-bundle ###
 /docker/dbdata
 /.env
+/.env.test
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###

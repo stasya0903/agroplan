@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Domain\ValueObject;
+
+class Note
+{
+    private ?string $value;
+
+    public function __construct(?string $value = null)
+    {
+        $this->value = $value;
+    }
+
+    public function getValue(): ?string
+    {
+        return $this->value;
+    }
+}

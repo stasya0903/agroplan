@@ -30,6 +30,7 @@ services:
       - ./:/data/agroplan
     networks:
       - app-network
+
 networks:
   app-network:
     driver: bridge
