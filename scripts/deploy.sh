@@ -2,6 +2,7 @@
 # Ensure SSH agent is running and the key is added
 eval $(ssh-agent -s)
 ssh-add /home/ubuntu/.ssh/id_rsa
+ssh -T git@github.com
 
 # Directories for releases and the current version
 DEPLOY_PATH="/var/www/agroplan/releases"
