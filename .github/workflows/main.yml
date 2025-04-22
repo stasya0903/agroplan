@@ -123,3 +123,23 @@ jobs:
       - name: Cleanup
         run: |
           docker-compose down
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_test  # Ensures deploy only happens after build_and_test completes successfully
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key for deployment
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Add your private key to GitHub Secrets
+
+      - name: Deploy the application
+        run: |
+          echo "Deploying application..."
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} 'cd /var/www/agroplan/agroplan && git pull && ./deploy.sh'
+
+    # Optional: Only deploy when pushing to master (adjust as needed)
+    if: github.ref == 'refs/heads/master'
