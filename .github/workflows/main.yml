@@ -1,6 +1,9 @@
 name: "CI"
 
 on:
+  push:
+    branches:
+      - master  # Trigger when pushing directly to master
   pull_request:
     branches:
       - master  # Trigger on PRs targeting master
