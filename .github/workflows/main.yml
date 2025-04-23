@@ -142,7 +142,7 @@ jobs:
       - name: Deploy the application
         run: |
           echo "Deploying application..."
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} 'cd /var/www/agroplan/agroplan && sudo git pull && ./scripts/deploy.sh'
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} 'cd /var/www/agroplan/agroplan && sudo git pull && sudo chmod +x ./scripts/deploy.sh && ./scripts/deploy.sh'
 
     # Optional: Only deploy when pushing to master (adjust as needed)
     if: github.ref == 'refs/heads/master'

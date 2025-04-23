@@ -20,13 +20,17 @@ NEW_RELEASE_PATH="$DEPLOY_PATH/$TIMESTAMP"
 sudo mkdir -p $NEW_RELEASE_PATH
 
 # Clone the project into the new release directory
-GIT_SSH_COMMAND="ssh -i /home/ubuntu/.ssh/id_rsa" sudo git clone git@github.com:stasya0903/agroplan.git $NEW_RELEASE_PATH
+#GIT_SSH_COMMAND="ssh -i /home/ubuntu/.ssh/id_rsa"  git clone git@github.com:stasya0903/agroplan.git $NEW_RELEASE_PATH
+TEMP_CLONE_PATH="/tmp/agroplan_$TIMESTAMP"
+GIT_SSH_COMMAND="ssh -i /home/ubuntu/.ssh/id_rsa" git clone git@github.com:stasya0903/agroplan.git $TEMP_CLONE_PATH
+sudo mv $TEMP_CLONE_PATH $NEW_RELEASE_PATH
+sudo chown -R www-data:www-data $NEW_RELEASE_PATH
 
 # If there is an existing current release, save it as the previous version
 if [ -L "$CURRENT_PATH" ]; then
     PREVIOUS_RELEASE=$(readlink -f $CURRENT_PATH)
     rm -f $PREVIOUS_PATH
-    ln -s $PREVIOUS_RELEASE $PREVIOUS_PATH
+    sudo ln -s $PREVIOUS_RELEASE $PREVIOUS_PATH
 fi
 
 # Remove the old symbolic link and create a new one for the current version
