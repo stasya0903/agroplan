@@ -29,7 +29,7 @@ sudo chown -R www-data:www-data $NEW_RELEASE_PATH
 # If there is an existing current release, save it as the previous version
 if [ -L "$CURRENT_PATH" ]; then
     PREVIOUS_RELEASE=$(readlink -f $CURRENT_PATH)
-    rm -f $PREVIOUS_PATH
+    sudo rm -f $PREVIOUS_PATH
     sudo ln -s $PREVIOUS_RELEASE $PREVIOUS_PATH
 fi
 
