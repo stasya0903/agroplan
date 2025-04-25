@@ -25,7 +25,7 @@ GIT_SSH_COMMAND="ssh -i /home/ubuntu/.ssh/id_rsa" sudo git clone git@github.com:
 # If there is an existing current release, save it as the previous version
 if [ -L "$CURRENT_PATH" ]; then
     PREVIOUS_RELEASE=$(readlink -f $CURRENT_PATH)
-    rm -f $PREVIOUS_PATH
+    sudo rm -f $PREVIOUS_PATH
     ln -s $PREVIOUS_RELEASE $PREVIOUS_PATH
 fi
 
@@ -52,7 +52,7 @@ RELEASES=$(ls -dt */ | tail -n +$(($RELEASES_COUNT + 1)))
 if [ -n "$RELEASES" ]; then
   echo "Deleting old releases..."
   for RELEASE in $RELEASES; do
-    rm -rf "$DEPLOY_PATH/$RELEASE"
+    sudo rm -rf "$DEPLOY_PATH/$RELEASE"
   done
 else
   echo "No old releases to delete."
