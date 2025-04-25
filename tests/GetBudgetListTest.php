@@ -33,7 +33,7 @@ class GetBudgetListTest extends WebTestCase
 
     private KernelBrowser $client;
     private mixed $repository;
-    private Plantation $plantation;
+    private array $plantations;
 
     protected function setUp(): void
     {
@@ -67,16 +67,16 @@ class GetBudgetListTest extends WebTestCase
         $this->assertCount(3, $response['incoming']);
         $this->assertEquals(18000, $response['totalIncome']);
         $this->assertIsArray($response['spending']);
-        $this->assertCount(3, $response['spending']);
+        $this->assertCount(7, $response['spending']);
         $this->assertEquals(3107.33, $response['totalSpend']);
         $this->assertEquals(14892.67, $response['profit']);
     }
 
     #[Test]
-    public function testFilterByPlantationSuccess(): void
+    public function testFilterBudgetByPlantationSuccess(): void
     {
         $data = [
-            "plantationId" => 100
+            "plantationId" => $this->plantations[1]->getId()
         ];
 
         $this->client->request(
@@ -91,16 +91,16 @@ class GetBudgetListTest extends WebTestCase
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
         $this->assertIsArray($response['incoming']);
-        $this->assertCount(0, $response['incoming']);
-        $this->assertEquals(0, $response['totalIncome']);
+        $this->assertCount(1, $response['incoming']);
+        $this->assertEquals(6000, $response['totalIncome']);
         $this->assertIsArray($response['spending']);
-        $this->assertCount(0, $response['spending']);
-        $this->assertEquals(0, $response['totalSpend']);
-        $this->assertEquals(0, $response['profit']);
+        $this->assertCount(3, $response['spending']);
+        $this->assertEquals(1445.34, $response['totalSpend']);
+        $this->assertEquals(4554.66, $response['profit']);
     }
 
     #[Test]
-    public function testFilterByDateFromTypeSuccess(): void
+    public function testFilterBudgetByDateFromTypeSuccess(): void
     {
         $data = [
             "dateFrom" => '2025-04-25'
@@ -120,13 +120,13 @@ class GetBudgetListTest extends WebTestCase
         $this->assertCount(2, $response['incoming']);
         $this->assertEquals(12000, $response['totalIncome']);
         $this->assertIsArray($response['spending']);
-        $this->assertCount(2, $response['spending']);
+        $this->assertCount(4, $response['spending']);
         $this->assertEquals(2457.33, $response['totalSpend']);
         $this->assertEquals(9542.67, $response['profit']);
     }
 
     #[Test]
-    public function testFilterByDateToTypeSuccess(): void
+    public function testFilterBudgetByDateToTypeSuccess(): void
     {
         $data = [
             "dateTo" => '2025-04-10'
@@ -145,7 +145,7 @@ class GetBudgetListTest extends WebTestCase
 
         $this->assertCount(1, $response['incoming']);
         $this->assertEquals(6000, $response['totalIncome']);
-        $this->assertCount(1, $response['spending']);
+        $this->assertCount(3, $response['spending']);
         $this->assertEquals(650, $response['totalSpend']);
         $this->assertEquals(5350, $response['profit']);
     }
@@ -155,24 +155,44 @@ class GetBudgetListTest extends WebTestCase
         $fertilization = SpendingType::FERTILIZER;
         $gas = SpendingType::GASOLINE;
 
-        $this->plantation = new Plantation(new Name('Plantation'));
-        $this->plantationRepository->save($this->plantation);
+        //create plantations
+        $plantations = ['Plantation One', 'Plantation Two', 'Plantation Three'];
+        foreach ($plantations as $plantation) {
+            $plantation = new Plantation(new Name($plantation));
+            $this->plantationRepository->save($plantation);
+            $this->plantations[] = $plantation;
+        }
 
-
-        $this->createSpending('2025-04-10 00:00:00', $fertilization, $this->plantation, 650, 'new');
-        $this->createSpending('2025-04-25 00:00:00', $fertilization, $this->plantation, 1500, 'new2');
-        $this->createSpending('2025-06-01 00:00:00', $gas, $this->plantation, 957.33, 'new3');
-
-        $this->createIncoming('2025-04-10 00:00:00'); // 6000
-        $this->createIncoming('2025-04-25 00:00:00'); // 6000
-        $this->createIncoming('2025-06-01 00:00:00'); // 6000
+        $this->createSpendingGroup(
+            '2025-04-10 00:00:00',
+            $fertilization,
+            650,
+            'new',
+            array_map( fn(Plantation $plantation) => $plantation->getId(), $this->plantations)
+        );
+        $this->createSpendingGroup(
+            '2025-04-25 00:00:00',
+            $fertilization,
+            1500,
+            'new2',
+            [$this->plantations[0]->getId(), $this->plantations[1]->getId()]
+        );
+        $this->createSpendingGroup(
+            '2025-06-01 00:00:00',
+            $gas,
+            957.33,
+            'new2',
+            [$this->plantations[1]->getId(), $this->plantations[2]->getId()]
+        );
+        $this->createIncoming('2025-04-10 00:00:00',$this->plantations[0]); // 6000
+        $this->createIncoming('2025-04-25 00:00:00',$this->plantations[1]); // 6000
+        $this->createIncoming('2025-06-01 00:00:00',$this->plantations[2]); // 6000
     }
 
     private function createIncoming(
-        string $date
+        string $date,
+        Plantation $plantation,
     ): void {
-        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
-        $this->plantationRepository->save($plantation);
         $incoming = new Incoming(
             $plantation,
             new Date($date),
@@ -185,21 +205,29 @@ class GetBudgetListTest extends WebTestCase
         );
         $this->repository->save($incoming);
     }
-    private function createSpending(
+    private function createSpendingGroup(
         string $date,
-        SpendingType $spendingType,
-        Plantation $plantation,
+        SpendingType
+        $spendingType,
         float $amount,
-        string $note
+        string $note,
+        array $plantationIds
     ): void {
-        $work = new Spending(
-            $plantation,
-            $spendingType,
-            new Date($date),
-            Money::fromFloat($amount),
-            new Note($note)
+        $data = [
+            "spendingTypeId" => $spendingType->value,
+            "plantationIds" => $plantationIds,
+            "date" => $date,
+            "amount" => $amount,
+            "note" => $note
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/spending/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
         );
-
-        $this->spendingRepository->save($work);
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 }

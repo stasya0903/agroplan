@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Entity;
 
+use App\Domain\Entity\SpendingGroup;
 use App\Domain\Entity\Work;
 use App\Domain\Enums\SpendingType;
 use Doctrine\DBAL\Types\Types;
@@ -21,21 +22,23 @@ class SpendingEntity
     #[ORM\JoinColumn(nullable: false)]
     private PlantationEntity $plantation;
 
-    #[ORM\Column(type: 'integer', enumType: SpendingType::class)]
-    private SpendingType $type;
+    #[ORM\ManyToOne(targetEntity: SpendingGroupEntity::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private SpendingGroupEntity $spendingGroup;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $date;
+
+    public function getSpendingGroup(): SpendingGroupEntity
+    {
+        return $this->spendingGroup;
+    }
+
+    public function setSpendingGroup(SpendingGroupEntity $spendingGroup): void
+    {
+        $this->spendingGroup = $spendingGroup;
+    }
 
     #[ORM\Column(type: 'integer')]
     private int $amountInCents;
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $note;
-
-    #[ORM\OneToOne(inversedBy: 'spending')]
-    private ?WorkEntity $work = null;
-
 
     public function getId(): ?int
     {
@@ -57,26 +60,6 @@ class SpendingEntity
         $this->plantation = $plantation;
     }
 
-    public function getType(): SpendingType
-    {
-        return $this->type;
-    }
-
-    public function setType(SpendingType $type): void
-    {
-        $this->type = $type;
-    }
-
-    public function getDate(): ?\DateTimeImmutable
-    {
-        return $this->date;
-    }
-
-    public function setDate(?\DateTimeImmutable $date): void
-    {
-        $this->date = $date;
-    }
-
     public function getAmountInCents(): int
     {
         return $this->amountInCents;
@@ -87,37 +70,13 @@ class SpendingEntity
         $this->amountInCents = $amountInCents;
     }
 
-    public function getNote(): ?string
-    {
-        return $this->note;
-    }
-
-    public function setNote(?string $note): void
-    {
-        $this->note = $note;
-    }
-    public function getWork(): ?WorkEntity
-    {
-        return $this->work;
-    }
-
-    public function setWork(?WorkEntity $work): void
-    {
-        $this->work = $work;
-    }
-
-
     public function __construct(
+        SpendingGroupEntity $spendingGroup,
         PlantationEntity $plantation,
-        SpendingType $type,
-        \DateTimeImmutable $date,
-        int $payment,
-        ?string $note
+        int $payment
     ) {
         $this->plantation = $plantation;
-        $this->type = $type;
-        $this->date = $date;
         $this->amountInCents = $payment;
-        $this->note = $note;
+        $this->spendingGroup = $spendingGroup;
     }
 }

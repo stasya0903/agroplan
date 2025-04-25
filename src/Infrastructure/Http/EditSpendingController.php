@@ -25,6 +25,7 @@ final class EditSpendingController extends AbstractController
 
     public function __invoke(#[MapRequestPayload] EditSpendingRequest $request): Response
     {
+
         try {
             $response = ($this->useCase)($request);
             return $this->json($response);

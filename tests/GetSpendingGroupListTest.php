@@ -23,20 +23,20 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use App\Domain\ValueObject\Money;
 
-class GetSpendingsListTest extends WebTestCase
+class GetSpendingGroupListTest extends WebTestCase
 {
     use TableResetTrait;
 
     private KernelBrowser $client;
     private mixed $repository;
-    private Plantation $plantation;
+    private array $plantations;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->repository = static::getContainer()->get(SpendingRepositoryInterface::class);
         $this->plantationRepository = static::getContainer()->get(PlantationRepositoryInterface::class);
-        $this->truncateTables(['work', 'spending', 'worker_shift', 'plantations']);
+        $this->truncateTables(['work', 'spending_group', 'worker_shift', 'plantations']);
         $this->seed();
     }
 
@@ -47,7 +47,7 @@ class GetSpendingsListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/spending/list',
+            '/api/v1/spending_group/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -56,7 +56,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(3, $response['spending']);
+        $this->assertCount(3, $response['spendingGroups']);
         $this->assertIsArray($response);
         $this->assertEquals(3107.33, $response['total']);
     }
@@ -65,12 +65,12 @@ class GetSpendingsListTest extends WebTestCase
     public function testFilterByPlantationSuccess(): void
     {
         $data = [
-            "plantationId" => $this->plantation->getId() + 1
+            "plantationId" => $this->plantations[0]->getId()
         ];
 
         $this->client->request(
             'POST',
-            '/api/v1/spending/list',
+            '/api/v1/spending_group/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -78,9 +78,8 @@ class GetSpendingsListTest extends WebTestCase
         );
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
-
-        $this->assertCount(0, $response['spending']);
-        $this->assertEquals(0, $response['total']);
+        $this->assertCount(2, $response['spendingGroups']);
+        $this->assertEquals(966.67, $response['total']);
     }
 
     #[Test]
@@ -92,7 +91,7 @@ class GetSpendingsListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/spending/list',
+            '/api/v1/spending_group/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -101,7 +100,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response['spending']);
+        $this->assertCount(1, $response['spendingGroups']);
         $this->assertEquals(957.33, $response['total']);
     }
 
@@ -114,7 +113,7 @@ class GetSpendingsListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/spending/list',
+            '/api/v1/spending_group/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -123,7 +122,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(2, $response['spending']);
+        $this->assertCount(2, $response['spendingGroups']);
         $this->assertEquals(2457.33, $response['total']);
     }
 
@@ -136,7 +135,7 @@ class GetSpendingsListTest extends WebTestCase
 
         $this->client->request(
             'POST',
-            '/api/v1/spending/list',
+            '/api/v1/spending_group/list',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -145,7 +144,7 @@ class GetSpendingsListTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertCount(1, $response['spending']);
+        $this->assertCount(1, $response['spendingGroups']);
         $this->assertEquals(650, $response['total']);
     }
 
@@ -154,31 +153,62 @@ class GetSpendingsListTest extends WebTestCase
         $fertilization = SpendingType::FERTILIZER;
         $gas = SpendingType::GASOLINE;
         //create plantations
-        $this->plantation = new Plantation(new Name('Plantation'));
-        $this->plantationRepository->save($this->plantation);
+        $plantations = ['Plantation One', 'Plantation Two', 'Plantation Three'];
+        foreach ($plantations as $plantation) {
+            $plantation = new Plantation(new Name($plantation));
+            $this->plantationRepository->save($plantation);
+            $this->plantations[] = $plantation;
+        }
 
-
-        // Create Works on different dates
-        $this->createSpending('2025-04-10 00:00:00', $fertilization, $this->plantation, 650, 'new');
-        $this->createSpending('2025-04-25 00:00:00', $fertilization, $this->plantation, 1500, 'new2');
-        $this->createSpending('2025-06-01 00:00:00', $gas, $this->plantation, 957.33, 'new3');
+        //216.6
+        $this->createSpendingGroup(
+            '2025-04-10 00:00:00',
+            $fertilization,
+            650,
+            'new',
+            array_map( fn(Plantation $plantation) => $plantation->getId(), $this->plantations)
+        );
+        //750
+        $this->createSpendingGroup(
+            '2025-04-25 00:00:00',
+            $fertilization,
+            1500,
+            'new2',
+            [$this->plantations[0]->getId(), $this->plantations[1]->getId()]
+        );
+        //478.6
+        $this->createSpendingGroup(
+            '2025-06-01 00:00:00',
+            $gas,
+            957.33,
+            'new2',
+            [$this->plantations[1]->getId(), $this->plantations[2]->getId()]
+        );
     }
 
-    private function createSpending(
+    private function createSpendingGroup(
         string $date,
-        SpendingType $spendingType,
-        Plantation $plantation,
+        SpendingType
+        $spendingType,
         float $amount,
-        string $note
+        string $note,
+        array $plantationIds
     ): void {
-        $work = new Spending(
-            $plantation,
-            $spendingType,
-            new Date($date),
-            Money::fromFloat($amount),
-            new Note($note)
+        $data = [
+            "spendingTypeId" => $spendingType->value,
+            "plantationIds" => $plantationIds,
+            "date" => $date,
+            "amount" => $amount,
+            "note" => $note
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/spending/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
         );
-
-        $this->repository->save($work);
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 }

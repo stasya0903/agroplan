@@ -12,7 +12,7 @@ class Work
     private ?int $id = null;
     private array $workerShifts = [];
 
-    private ?Spending $spending = null;
+    private ?SpendingGroup $spendingGroup = null;
 
     public function __construct(
         private WorkType $workType,
@@ -54,10 +54,6 @@ class Work
         return $this->workerShifts;
     }
 
-    public function getSpending(): ?Spending
-    {
-        return $this->spending;
-    }
 
     public function addWorkerShift(WorkerShift $shift): void
     {
@@ -85,9 +81,9 @@ class Work
         return $total;
     }
 
-    public function assignSpending(Spending $spending): void
+    public function assignSpending(SpendingGroup $spending): void
     {
-        $this->spending = $spending;
+        $this->spendingGroup = $spending;
         $spending->assignToWork($this);
     }
 
@@ -126,5 +122,10 @@ class Work
         if ($this->workType->getId() === SystemWorkType::OTHER->value && !$this->note->getValue()) {
             throw new \DomainException('Note is required for OTHER work type.');
         }
+    }
+
+    public function getSpendingGroup(): ?SpendingGroup
+    {
+        return $this->spendingGroup;
     }
 }

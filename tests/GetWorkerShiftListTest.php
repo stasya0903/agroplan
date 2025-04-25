@@ -42,7 +42,7 @@ class GetWorkerShiftListTest extends WebTestCase
     }
 
     #[Test]
-    public function testGetAllWorkTypesSuccess(): void
+    public function testGetAllWorkShiftTypesSuccess(): void
     {
         $data = [];
 
@@ -110,7 +110,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertEquals(500.00, $response["totalToPay"]);
     }
 
-    public function testFilterByDateFromTypeSuccess(): void
+    public function testFilterWorkShiftByDateFromTypeSuccess(): void
     {
         $data = [
             "dateFrom" => '2025-04-25'
@@ -131,7 +131,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertEquals(450.00, $response["totalToPay"]);
     }
 
-    public function testFilterByDateToTypeSuccess(): void
+    public function testFilterWorkShiftByDateToTypeSuccess(): void
     {
         $data = [
             "dateTo" => '2025-04-10'
@@ -152,7 +152,7 @@ class GetWorkerShiftListTest extends WebTestCase
         $this->assertEquals(450.00, $response["totalToPay"]);
     }
 
-    public function testFilterByPaidToTypeSuccess(): void
+    public function testFilterWorkShiftByPaidToTypeSuccess(): void
     {
         $data = [
             "paid" => true

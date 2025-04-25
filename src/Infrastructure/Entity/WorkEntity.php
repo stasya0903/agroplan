@@ -35,19 +35,19 @@ class WorkEntity
     #[ORM\JoinTable(name: 'work_worker')]
     private Collection $workers;
 
-    #[ORM\OneToOne(targetEntity: SpendingEntity::class, mappedBy: 'work', cascade: ['persist'])]
-    private ?SpendingEntity $spending = null;
+    #[ORM\OneToOne(targetEntity: SpendingGroupEntity::class, mappedBy: 'work', cascade: ['persist'])]
+    private ?SpendingGroupEntity $spending = null;
 
     #[ORM\OneToMany(targetEntity: WorkerShiftEntity::class, mappedBy: 'work', cascade: ['persist'], orphanRemoval: true)]
     private Collection $workerShifts;
 
 
-    public function getSpending(): ?SpendingEntity
+    public function getSpending(): ?SpendingGroupEntity
     {
         return $this->spending;
     }
 
-    public function setSpending(?SpendingEntity $spending): void
+    public function setSpending(?SpendingGroupEntity $spending): void
     {
         $this->spending = $spending;
     }

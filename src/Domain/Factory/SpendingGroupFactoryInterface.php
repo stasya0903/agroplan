@@ -10,11 +10,14 @@ use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
 
-interface SpendingFactoryInterface
+interface SpendingGroupFactoryInterface
 {
     public function create(
-        SpendingGroup $spendingGroup,
-        Plantation $plantation,
-        Money $amount
-    ): Spending;
+        SpendingType $type,
+        Date $date,
+        Money $amount,
+        Note $info,
+        ?bool $isShared,
+        ?array $spending = []
+    ): SpendingGroup;
 }

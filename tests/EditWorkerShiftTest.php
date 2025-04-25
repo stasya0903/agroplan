@@ -24,8 +24,6 @@ class EditWorkerShiftTest extends WebTestCase
 
     private KernelBrowser $client;
     private mixed $repository;
-    private Plantation $plantation;
-    private Worker $worker1;
     private Work $existingWork;
 
     protected function setUp(): void
@@ -68,7 +66,7 @@ class EditWorkerShiftTest extends WebTestCase
             $result += $item->getPayment()->getAmount();
             return $result;
         }, 0);
-        $this->assertEquals($work->getSpending()->getAmount()->getAmount(), $cost);
+        $this->assertEquals($work->getSpendingGroup()->getAmount()->getAmount(), $cost);
     }
 
     public function testEditNotExistingWorkerShift(): void
@@ -98,13 +96,13 @@ class EditWorkerShiftTest extends WebTestCase
     public function seed(): void
     {
         //create plantations
-        $this->plantation = new Plantation(new Name('Plantation'));
-        $this->plantationRepository->save($this->plantation);
+        $plantation = new Plantation(new Name('Plantation'));
+        $this->plantationRepository->save($plantation);
         //create workers
 
-        $this->worker1 = new Worker(new Name('Alice'), new Money(25000));
-        $this->workerRepo->save($this->worker1);
-        $this->createWork('2025-04-10 00:00:00', $this->plantation, [$this->worker1]); //4500
+        $worker1 = new Worker(new Name('Alice'), new Money(25000));
+        $this->workerRepo->save($worker1);
+        $this->createWork('2025-04-10 00:00:00', $plantation, [$worker1]); //4500
     }
 
     private function createWork(

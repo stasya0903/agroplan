@@ -8,16 +8,24 @@ use App\Domain\Entity\SpendingGroup;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\SpendingFactoryInterface;
+use App\Domain\Factory\SpendingGroupFactoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
 use App\Domain\ValueObject\Name;
 
-class SpendingFactory implements SpendingFactoryInterface
+class SpendingGroupFactory implements SpendingGroupFactoryInterface
 {
 
-    public function create(SpendingGroup $spendingGroup, Plantation $plantation, Money $amount): Spending
-    {
-        return new Spending($spendingGroup, $plantation, $amount);
+
+    public function create(
+        SpendingType $type,
+        Date $date,
+        Money $amount,
+        Note $info,
+        ?bool $isShared,
+        ?array $spending = []
+    ): SpendingGroup {
+        return new SpendingGroup($type, $date, $amount, $info, $isShared, $spending);
     }
 }

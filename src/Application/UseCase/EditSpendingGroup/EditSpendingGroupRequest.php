@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Application\UseCase\CreateSpending;
+namespace App\Application\UseCase\EditSpendingGroup;
 
-class CreateSpendingRequest
+class EditSpendingGroupRequest
 {
     public function __construct(
-        public array $plantationIds,
+        public int $spendingGroupId,
         public int $spendingTypeId,
         public string $date,
         public float $amount,

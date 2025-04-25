@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Http;
+
+use App\Application\UseCase\GetList\SpendingGroup\GetSpendingGroupListRequest;
+use App\Application\UseCase\GetList\SpendingGroup\GetSpendingGroupListUseCase;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+
+#[Route(
+    '/api/v1/spending_group/list',
+    name: 'spending_list',
+    methods: ['POST']
+)]
+final class GetSpendingGroupListController extends AbstractController
+{
+    public function __construct(
+        private readonly GetSpendingGroupListUseCase $useCase
+    ) {
+    }
+
+    public function __invoke(
+        #[MapRequestPayload] GetSpendingGroupListRequest $request
+    ): Response {
+        $response = ($this->useCase)($request);
+        return $this->json($response);
+        try {
+
+        } catch (\Throwable $e) {
+            $errorResponse = [
+                'message' => $e->getMessage()
+            ];
+            return $this->json($errorResponse, 400);
+        }
+    }
+}

@@ -44,7 +44,7 @@ final class Weight
 
     public static function createFromGrams(int $grams): self
     {
-        $kg = round($grams / 1000);
+        $kg = round($grams / 1000, 3);
         return new self($kg);
     }
 }

@@ -8,7 +8,11 @@ interface SpendingRepositoryInterface
 {
     public function find(int $id): ?Spending;
     public function save(Spending $spending): void;
-    public function findByWork(int $workId): ?Spending;
+
     public function getList(array $ids): array;
     public function delete(int $spendingId);
+
+    public function getForGroup(int $groupId, array $except = []): array;
+
+    public function deleteForGroup(int $groupId): void;
 }

@@ -5,8 +5,8 @@ namespace App\Infrastructure\Repository;
 use App\Domain\Entity\Spending;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Infrastructure\Entity\PlantationEntity;
-use App\Infrastructure\Entity\WorkEntity;
-use App\Infrastructure\Entity\WorkerEntity;
+use App\Infrastructure\Entity\SpendingGroupEntity;
+
 use App\Infrastructure\Entity\SpendingEntity;
 use App\Infrastructure\Mapper\SpendingMapper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,21 +16,24 @@ class SpendingRepository implements SpendingRepositoryInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly SpendingMapper $mapper
+        private readonly SpendingMapper $mapper,
     ) {
     }
 
-    public function find(int $id): ?Spending
+    public function find(int $id, $withGroup = true): ?Spending
     {
-        $entity = $this->em->getRepository(SpendingEntity::class)->find($id);
-        if (!$entity) {
-            return null;
+        $qb = $this->em->createQueryBuilder()
+            ->select('s')
+            ->from(SpendingEntity::class, 's')
+            ->where('s.id = :id')
+            ->setParameter('id', $id);
+
+        if ($withGroup) {
+            $qb->addSelect('sg')
+                ->leftJoin('s.spendingGroup', 'sg');
         }
-        return $this->mapper->mapToDomain($entity);
-    }
-    public function findByWork(int $workId): ?Spending
-    {
-        $entity = $this->em->getRepository(SpendingEntity::class)->findOneBy(['work' => $workId]);
+
+        $entity = $qb->getQuery()->getOneOrNullResult();
         if (!$entity) {
             return null;
         }
@@ -46,14 +49,14 @@ class SpendingRepository implements SpendingRepositoryInterface
             ? $this->em->getRepository(SpendingEntity::class)->findOneBy(['id' => $spending->getId()])
             : null;
         $plantationEntity = $this->em->getReference(PlantationEntity::class, $spending->getPlantation()->getId());
-        $workEntity = $spending->getWork()
-            ? $this->em->getReference(WorkEntity::class, $spending->getWork()->getId())
+        $groupEntity = $spending->getSpendingGroup()
+            ? $this->em->getReference(SpendingGroupEntity::class, $spending->getSpendingGroup()->getId())
             : null;
         $entity = $this->mapper->mapToEntity(
             $spending,
             $plantationEntity,
-            $workEntity,
-            $existing
+            $existing,
+            $groupEntity
         );
 
         $this->em->persist($entity);
@@ -61,14 +64,6 @@ class SpendingRepository implements SpendingRepositoryInterface
         $reflectionProperty = new \ReflectionProperty(Spending::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($spending, $entity->getId());
-    }
-
-
-    public function existsByName(string $name): bool
-    {
-        $repository = $this->em->getRepository(SpendingEntity::class);
-        $entity = $repository->findOneBy(['name' => $name]);
-        return $entity !== null;
     }
 
     public function getList(array $ids = []): array
@@ -81,22 +76,57 @@ class SpendingRepository implements SpendingRepositoryInterface
                 ->andWhere('spending.id IN (:ids)')
                 ->setParameter('ids', $ids);
         }
-        $items =  $query->getQuery()->getResult();
+        $items = $query->getQuery()->getResult();
         $spending = [];
         foreach ($items as $item) {
             $spending[] = $this->mapper->mapToDomain($item);
         }
         return $spending;
     }
+
     public function delete(int $spendingId): void
     {
-        $workerShift = $this->em->getRepository(SpendingEntity::class)->find($spendingId);
+        $spending = $this->em->getRepository(SpendingEntity::class)->find($spendingId);
 
-        if (!$workerShift) {
+        if (!$spending) {
             throw new \DomainException("Spending with ID $spendingId not found.");
         }
 
-        $this->em->remove($workerShift);
+        $this->em->remove($spending);
         $this->em->flush();
+    }
+
+    public function getForGroup(int $groupId, array $except = []): array
+    {
+        $qry = $this->em->createQueryBuilder()
+            ->select('s')
+            ->from(SpendingEntity::class, 's')
+            ->leftJoin('s.spendingGroup', 'sg')->addSelect('sg')
+            ->where('s.spendingGroup = (:group_id)')
+            ->setParameter('group_id', $groupId);
+
+        if (count($except) > 0) {
+            $qry->andWhere('s.id NOT IN (:ids)')
+                ->setParameter('ids', $except);
+        }
+
+        $items = $qry->getQuery()->getResult();
+        $spending = [];
+        foreach ($items as $item) {
+            $spending[] = $this->mapper->mapToDomain($item);
+        }
+        return $spending;
+    }
+
+    public function deleteForGroup(int $groupId): void
+    {
+        $this->em->createQueryBuilder()
+            ->select('s')
+            ->from(SpendingEntity::class, 's')
+            ->where('s.group_id = :group_id')
+            ->setParameter('group_id', $groupId)
+            ->delete()
+            ->getQuery()
+            ->getResult();
     }
 }
