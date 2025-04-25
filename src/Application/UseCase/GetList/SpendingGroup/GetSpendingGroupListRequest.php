@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Application\UseCase\GetList\Spending;
+namespace App\Application\UseCase\GetList\SpendingGroup;
 
-class GetSpendingListRequest
+class GetSpendingGroupListRequest
 {
     public function __construct(
         public ?int $plantationId = null,

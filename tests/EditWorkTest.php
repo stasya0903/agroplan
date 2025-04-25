@@ -11,6 +11,7 @@ use App\Domain\Enums\SystemWorkType;
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\WorkerFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\Repository\WorkerShiftRepositoryInterface;
@@ -42,6 +43,7 @@ class EditWorkTest extends WebTestCase
         $this->workerRepository = static::getContainer()->get(WorkerRepositoryInterface::class);
         $this->workerShiftRepository = static::getContainer()->get(WorkerShiftRepositoryInterface::class);
         $this->spendingRepository = static::getContainer()->get(SpendingRepositoryInterface::class);
+        $this->spendingGroupRepository = static::getContainer()->get(SpendingGroupRepositoryInterface::class);
         $this->workTypeRepository = static::getContainer()->get(WorkTypeRepositoryInterface::class);
         //create plantation
         $plantation = $this->plantationFactory->create(new Name('new Plantation for edit'));
@@ -127,11 +129,13 @@ class EditWorkTest extends WebTestCase
         }
 
         //check spending update
-        $spending = $this->spendingRepository->findByWork($data['id']);
-        $this->assertEquals(700.00, $spending->getAmount()->getAmountAsFloat());
-        $this->assertEquals($plantation->getId(), $spending->getPlantation()->getId());
-        $this->assertEquals(SpendingType::WORK, $spending->getType());
-        $this->assertEquals($work->getId(), $spending->getWork()?->getId());
+        $spendingGroup = $this->spendingGroupRepository->findByWork($data['id']);
+        $this->assertEquals(700.00, $spendingGroup->getAmount()->getAmountAsFloat());
+        $this->assertEquals(SpendingType::WORK, $spendingGroup->getType());
+        $this->assertEquals($work->getId(), $spendingGroup->getWork()?->getId());
+        $spending = $this->spendingRepository->getForGroup($spendingGroup->getId());
+        $this->assertCount(1, $spending, 'There should be one spending.');
+        $this->assertEquals($spending[0]->getPlantation()->getId(), $plantation->getId());
     }
 
     #[Test]

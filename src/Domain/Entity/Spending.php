@@ -13,13 +13,20 @@ class Spending
     private ?Work $work = null;
 
     public function __construct(
+        private SpendingGroup $spendingGroup,
         private Plantation $plantation,
-        private SpendingType $type,
-        private Date $date,
-        private Money $amount,
-        private Note $info
+        private Money $amount
     ) {
-        $this->validate();
+    }
+
+    public function getSpendingGroup(): SpendingGroup
+    {
+        return $this->spendingGroup;
+    }
+
+    public function setSpendingGroup(SpendingGroup $spendingGroup): void
+    {
+        $this->spendingGroup = $spendingGroup;
     }
 
     public function setPlantation(Plantation $plantation): void
@@ -27,15 +34,6 @@ class Spending
         $this->plantation = $plantation;
     }
 
-    public function setType(SpendingType $type): void
-    {
-        $this->type = $type;
-    }
-
-    public function setDate(Date $date): void
-    {
-        $this->date = $date;
-    }
 
     public function setAmount(Money $amount): void
     {
@@ -72,29 +70,8 @@ class Spending
         return $this->id;
     }
 
-    public function getType(): SpendingType
-    {
-        return $this->type;
-    }
-
-    public function getDate(): Date
-    {
-        return $this->date;
-    }
-
     public function getAmount(): Money
     {
         return $this->amount;
-    }
-
-    public function getInfo(): ?Note
-    {
-        return $this->info;
-    }
-    private function validate(): void
-    {
-        if ($this->type === SpendingType::OTHER && !$this->info->getValue()) {
-            throw new \DomainException('Note is required for OTHER spending type.');
-        }
     }
 }

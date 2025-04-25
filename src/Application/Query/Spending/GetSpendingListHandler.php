@@ -27,16 +27,17 @@ class GetSpendingListHandler
     public function handle(GetSpendingListQuery $query): array
     {
         $sql = 'SELECT 
-                s.id, s.date, s.plantation_id, s.type, s.amount_in_cents, s.note, 
+                s.id, sg.date, s.plantation_id, sg.type, s.amount_in_cents, sg.note, 
                 pl.name as plantation_name
                 FROM spending s
                 LEFT JOIN plantations pl ON s.plantation_id = pl.id 
+                LEFT JOIN spending_group sg ON s.spending_group_id = sg.id 
                 ';
         $params = [];
         $types = [];
 
         if ($query->getSpendingTypeId() !== null) {
-            $sql .= ' WHERE s.type = :typeId';
+            $sql .= ' WHERE sg.type = :typeId';
             $params['typeId'] = $query->getSpendingTypeId();
             $types['typeId'] = Types::INTEGER;
         }
@@ -48,13 +49,13 @@ class GetSpendingListHandler
         }
 
         if ($query->getDateFrom() !== null) {
-            $sql .= count($params) ? ' AND s.date >= :dateFrom' : ' WHERE s.date >= :dateFrom';
+            $sql .= count($params) ? ' AND sg.date >= :dateFrom' : ' WHERE sg.date >= :dateFrom';
             $params['dateFrom'] = $query->getDateFrom()->getValue();
             $types['dateFrom'] = Types::DATETIME_IMMUTABLE;
         }
 
         if ($query->getDateTo() !== null) {
-            $sql .= count($params) ? ' AND s.date <= :dateTo' : ' WHERE s.date <= :dateTo';
+            $sql .= count($params) ? ' AND sg.date <= :dateTo' : ' WHERE sg.date <= :dateTo';
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
@@ -62,12 +63,11 @@ class GetSpendingListHandler
         $result = $this->db->fetchAllAssociative($sql, $params, $types);
         return array_map(fn($row) => new SpendingDTO(
             $row['id'],
-            $row['date'],
             $row['plantation_id'],
             $row['plantation_name'],
-            $row['type'],
-            SpendingType::from($row['type'])->label(),
             (new Money($row['amount_in_cents']))->getAmountAsFloat(),
+            SpendingType::from($row['type'])->label(),
+            $row['date'],
             $row['note'],
         ), $result);
     }

@@ -5,9 +5,11 @@ namespace App\Application\UseCase\CreateWork;
 use App\Application\Shared\TransactionalSessionInterface;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\SpendingFactoryInterface;
+use App\Domain\Factory\SpendingGroupFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
 use App\Domain\Factory\WorkFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\Repository\WorkerShiftRepositoryInterface;
@@ -29,7 +31,9 @@ class CreateWorkUseCase
         private readonly WorkerShiftRepositoryInterface $workerShiftRepository,
         private readonly SpendingFactoryInterface $spendingFactory,
         private readonly SpendingRepositoryInterface $spendingRepository,
-        private readonly TransactionalSessionInterface $transaction
+        private readonly TransactionalSessionInterface $transaction,
+        private readonly SpendingGroupFactoryInterface $spendingGroupFactory,
+        private readonly SpendingGroupRepositoryInterface $spendingGroupRepository,
     ) {
     }
 
@@ -79,14 +83,20 @@ class CreateWorkUseCase
 
             $price = $work->getFullPrice();
             if ($price > 0) {
-                $spending = $this->spendingFactory->create(
-                    $plantation,
+                $spendingGroup = $this->spendingGroupFactory->create(
                     SpendingType::WORK,
                     $date,
                     new Money($price),
-                    new Note()
+                    new Note('From work'),
+                    false
                 );
-                $spending->assignToWork($work);
+                $spendingGroup->assignToWork($work);
+                $this->spendingGroupRepository->save($spendingGroup);
+                $spending = $this->spendingFactory->create(
+                    $spendingGroup,
+                    $plantation,
+                    new Money($price),
+                );
                 $this->spendingRepository->save($spending);
             }
 

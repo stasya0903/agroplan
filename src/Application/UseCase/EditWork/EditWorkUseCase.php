@@ -8,8 +8,10 @@ use App\Application\Shared\TransactionalSessionInterface;
 use App\Domain\Entity\Work;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\SpendingFactoryInterface;
+use App\Domain\Factory\SpendingGroupFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
 use App\Domain\Repository\WorkerShiftRepositoryInterface;
@@ -28,9 +30,11 @@ class EditWorkUseCase
         private readonly WorkTypeRepositoryInterface $workTypeRepository,
         private readonly WorkerRepositoryInterface $workerRepository,
         private readonly WorkerShiftRepositoryInterface $workerShiftRepository,
-        private readonly SpendingRepositoryInterface $spendingRepository,
+        private readonly SpendingGroupRepositoryInterface $spendingGroupRepository,
+        private readonly SpendingGroupFactoryInterface $spendingGroupFactory,
         private readonly TransactionalSessionInterface $transaction,
-        private readonly SpendingFactoryInterface $spendingFactory,
+        private readonly SpendingRepositoryInterface $spendingRepository,
+        private readonly SpendingFactoryInterface $spendingFactory
     ) {
     }
 
@@ -131,27 +135,38 @@ class EditWorkUseCase
 
     private function updateSpendingForWork(Work $work): void
     {
-        $spending = $work->getSpending();
+        $spendingGroup = $work->getSpendingGroup();
         $price = $work->getFullPrice();
         if ($price > 0) {
-            if (!$spending) {
-                $spending = $this->spendingFactory->create(
-                    $work->getPlantation(),
+            if (!$spendingGroup) {
+                $spendingGroup = $this->spendingGroupFactory->create(
                     SpendingType::WORK,
                     $work->getDate(),
                     new Money($work->getFullPrice()),
-                    new Note()
+                    new Note(),
+                    false
                 );
+                $spendingGroup->assignToWork($work);
+                $this->spendingGroupRepository->save($spendingGroup);
+                $spending = $this->spendingFactory->create(
+                    $spendingGroup,
+                    $work->getPlantation(),
+                    new Money($price),
+                );
+                $this->spendingRepository->save($spending);
             } else {
-                $spending->setPlantation($work->getPlantation());
-                $spending->setDate($work->getDate());
+                $spendingGroup->setDate($work->getDate());
+                $spendingGroup->setAmount(new Money($price));
+                $spending = $this->spendingRepository->getForGroup($spendingGroup->getId())[0];
                 $spending->setAmount(new Money($price));
+                $this->spendingRepository->save($spending);
             }
-            $work->assignSpending($spending);
-            $this->spendingRepository->save($spending);
+            $work->assignSpending($spendingGroup);
+            $this->spendingGroupRepository->save($spendingGroup);
         } else {
-            if ($spending) {
-                $this->spendingRepository->delete($spending->getId());
+            if ($spendingGroup) {
+                $this->spendingRepository->deleteForGroup($spendingGroup->getId());
+                $this->spendingGroupRepository->delete($spendingGroup->getId());
             }
         }
     }

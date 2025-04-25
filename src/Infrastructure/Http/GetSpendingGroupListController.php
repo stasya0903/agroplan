@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
-use App\Application\UseCase\EditSpending\EditSpendingRequest;
-use App\Application\UseCase\EditSpending\EditSpendingUseCase;
+use App\Application\UseCase\GetList\SpendingGroup\GetSpendingGroupListRequest;
+use App\Application\UseCase\GetList\SpendingGroup\GetSpendingGroupListUseCase;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Route(
-    '/api/v1/spending/edit',
-    name: 'spending_edit',
+    '/api/v1/spending_group/list',
+    name: 'spending_list',
     methods: ['POST']
 )]
-final class EditSpendingController extends AbstractController
+final class GetSpendingGroupListController extends AbstractController
 {
     public function __construct(
-        private readonly EditSpendingUseCase $useCase
+        private readonly GetSpendingGroupListUseCase $useCase
     ) {
     }
 
-    public function __invoke(#[MapRequestPayload] EditSpendingRequest $request): Response
-    {
-
+    public function __invoke(
+        #[MapRequestPayload] GetSpendingGroupListRequest $request
+    ): Response {
         try {
             $response = ($this->useCase)($request);
             return $this->json($response);

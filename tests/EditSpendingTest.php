@@ -3,9 +3,11 @@
 namespace App\Tests;
 
 use App\Domain\Entity\Spending;
+use App\Domain\Entity\SpendingGroup;
 use App\Domain\Enums\SpendingType;
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
@@ -29,19 +31,31 @@ class EditSpendingTest extends WebTestCase
         $this->repository = static::getContainer()->get(SpendingRepositoryInterface::class);
         $this->plantationFactory = static::getContainer()->get(PlantationFactoryInterface::class);
         $this->plantationRepository = static::getContainer()->get(PlantationRepositoryInterface::class);
-        $this->spendingRepository = static::getContainer()->get(SpendingRepositoryInterface::class);
-        $this->truncateTables(['work', 'worker_shift', 'spending', 'workers', 'plantations']);
+        $this->spendingGroupRepository = static::getContainer()->get(SpendingGroupRepositoryInterface::class);
+        $this->truncateTables(['work', 'worker_shift', 'spending', 'spending_group','workers', 'plantations']);
         //create plantation
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));
         $this->plantationRepository->save($plantation);
-        $this->existingSpending = new Spending(
-            $plantation,
+        $spendingGroup = new SpendingGroup(
             SpendingType::FERTILIZER,
             new Date(date('Y-m-d h:i:s')),
             Money::fromFloat(888.3),
             new Note('new note')
         );
+        $this->spendingGroupRepository->save($spendingGroup);
+        $this->existingSpending = new Spending(
+            $spendingGroup,
+            $plantation,
+            Money::fromFloat(588.3)
+        );
         $this->repository->save($this->existingSpending);
+        $this->secondExistingSpending = new Spending(
+            $spendingGroup,
+            $plantation,
+            Money::fromFloat(300)
+        );
+
+        $this->repository->save($this->secondExistingSpending);
     }
 
     #[Test]
@@ -52,11 +66,8 @@ class EditSpendingTest extends WebTestCase
         $this->plantationRepository->save($plantation);
         $data = [
             "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::DIESEL->value,
             "plantationId" => $plantation->getId(),
-            "date" => date('Y-m-d H:m:s'),
             "amount" => 193.58,
-            "note" => "test editing spending",
         ];
         $this->client->request(
             'POST',
@@ -74,10 +85,12 @@ class EditSpendingTest extends WebTestCase
         $spending = $this->repository->find($this->existingSpending->getId());
 
         $this->assertEquals($data['amount'], $spending->getAmount()->getAmountAsFloat());
-        $this->assertEquals($data['note'], $spending->getInfo()->getValue());
-        $this->assertEquals($data['date'], $spending->getDate()->getValue()->format('Y-m-d H:m:s'));
         $this->assertEquals($plantation->getId(), $spending->getPlantation()->getId());
-        $this->assertEquals(SpendingType::DIESEL, $spending->getType());
+
+        $spendingGroup = $this->existingSpending->getSpendingGroup();
+        $allSpending = $this->repository->getForGroup($spendingGroup->getId());
+        $total = array_sum(array_map(fn($s) => $s->getAmount()->getAmount(), $allSpending));
+        $this->assertEquals($spendingGroup->getAmount()->getAmount(), $total);
     }
 
     #[Test]
@@ -85,11 +98,8 @@ class EditSpendingTest extends WebTestCase
     {
         $data = [
             "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::FERTILIZER->value,
             "plantationId" => 999,
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => 193.58,
-            "note" => "test work"
+            "amount" => 193.58
         ];
         $this->client->request(
             'POST',
@@ -110,13 +120,23 @@ class EditSpendingTest extends WebTestCase
     {
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));
         $this->plantationRepository->save($plantation);
+        $spendingGroup = new SpendingGroup(
+            SpendingType::WORK,
+            new Date(date('Y-m-d h:i:s')),
+            Money::fromFloat(888.3),
+            new Note('new note')
+        );
+        $this->spendingGroupRepository->save($spendingGroup);
+        $workSpending = new Spending(
+            $spendingGroup,
+            $plantation,
+            Money::fromFloat(888.3)
+        );
+        $this->repository->save($workSpending);
         $data = [
-            "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::WORK->value,
+            "spendingId" => $workSpending->getId(),
             "plantationId" => $plantation->getId(),
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => 193.58,
-            "note" => "test spending"
+            "amount" => 193.58
         ];
         $this->client->request(
             'POST',
@@ -138,12 +158,10 @@ class EditSpendingTest extends WebTestCase
 
         $data = [
             "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::FERTILIZER->value,
             "plantationId" => $this->existingSpending->getPlantation()->getId(),
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => 0,
-            "note" => "test spending"
+            "amount" => 0
         ];
+
         $this->client->request(
             'POST',
             '/api/v1/spending/edit',
@@ -164,11 +182,8 @@ class EditSpendingTest extends WebTestCase
 
         $data = [
             "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::FERTILIZER->value,
             "plantationId" => $this->existingSpending->getPlantation()->getId(),
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => -999,
-            "note" => "test spending"
+            "amount" => -999
         ];
         $this->client->request(
             'POST',
@@ -184,39 +199,12 @@ class EditSpendingTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Amount must be greater than zero.', $content['message']);
     }
-    public function testEditSpendingForOtherWithEmptyNote(): void
-    {
-        $data = [
-            "spendingId" => $this->existingSpending->getId(),
-            "spendingTypeId" => SpendingType::OTHER->value,
-            "plantationId" => $this->existingSpending->getPlantation()->getId(),
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => 99.33,
-            "note" => null
-        ];
-        $this->client->request(
-            'POST',
-            '/api/v1/spending/edit',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($data)
-        );
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
-        $response = $this->client->getResponse();
-        $content = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('message', $content);
-        $this->assertEquals('Note is required for OTHER spending type.', $content['message']);
-    }
     public function testEditGhostSpending(): void
     {
         $data = [
             "spendingId" => $this->existingSpending->getId() + 100,
-            "spendingTypeId" => SpendingType::OTHER->value,
             "plantationId" => $this->existingSpending->getPlantation()->getId(),
-            "date" => date('Y-m-d H:m:s'),
-            "amount" => 99.33,
-            "note" => null
+            "amount" => 99.33
         ];
         $this->client->request(
             'POST',
@@ -231,5 +219,83 @@ class EditSpendingTest extends WebTestCase
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Spending not found.', $content['message']);
+    }
+    public function testEditWithBiggerThanGroupAmount(): void
+    {
+        $data = [
+            "spendingId" => $this->existingSpending->getId(),
+            "plantationId" => $this->existingSpending->getPlantation()->getId(),
+            "amount" => 900,
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/spending/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Amount should be less than group amount.', $content['message']);
+    }
+    public function testAssignAllAmountToOneSpending(): void
+    {
+        $data = [
+            "spendingId" => $this->existingSpending->getId(),
+            "plantationId" => $this->existingSpending->getPlantation()->getId(),
+            "amount" => 888.3,
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/spending/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('You cannot assign all amount to one spending.', $content['message']);
+    }
+    public function testAssignAmountForOnlyOneSpending(): void
+    {
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        $spendingGroup = new SpendingGroup(
+            SpendingType::FERTILIZER,
+            new Date(date('Y-m-d h:i:s')),
+            Money::fromFloat(100),
+            new Note('new note')
+        );
+        $this->spendingGroupRepository->save($spendingGroup);
+        $existingSpending = new Spending(
+            $spendingGroup,
+            $plantation,
+            Money::fromFloat(100)
+        );
+        $this->repository->save($existingSpending);
+        $data = [
+            "spendingId" => $existingSpending->getId(),
+            "plantationId" => $existingSpending->getPlantation()->getId(),
+            "amount" => 500,
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/spending/edit',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Please change group amount for only spending in group.', $content['message']);
     }
 }

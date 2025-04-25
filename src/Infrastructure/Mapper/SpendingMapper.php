@@ -3,10 +3,12 @@
 namespace App\Infrastructure\Mapper;
 
 use App\Domain\Entity\Spending;
+use App\Domain\Entity\SpendingGroup;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
 use App\Infrastructure\Entity\PlantationEntity;
+use App\Infrastructure\Entity\SpendingGroupEntity;
 use App\Infrastructure\Entity\WorkEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use App\Infrastructure\Entity\SpendingEntity;
@@ -16,55 +18,41 @@ final class SpendingMapper
 {
     public function __construct(
         private readonly PlantationMapper $plantationMapper,
-        private readonly WorkMapper $workMapper,
+        private readonly SpendingGroupMapper $spendingMapper,
     ) {
     }
 
     public function mapToDomain(SpendingEntity $entity): Spending
     {
         $spending = new Spending(
+            $this->spendingMapper->mapToDomain($entity->getSpendingGroup()),
             $this->plantationMapper->mapToDomain($entity->getPlantation()),
-            $entity->getType(),
-            new Date($entity->getDate()->format('Y-m-d H:i:s')),
             new Money($entity->getAmountInCents()),
-            new Note($entity->getNote()),
         );
         $reflectionProperty = new \ReflectionProperty(Spending::class, 'id');
         $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($spending, $entity->getId());
-        if ($entity->getWork()) {
-            $spending->assignToWork($this->workMapper->mapToDomain($entity->getWork()));
-        }
         return $spending;
     }
 
     public function mapToEntity(
         Spending $spending,
         PlantationEntity $plantation,
-        ?WorkEntity $work,
-        SpendingEntity $entity = null
+        SpendingEntity $entity = null,
+        SpendingGroupEntity $spendingGroup = null,
     ): SpendingEntity {
-        $date = $spending->getDate()->getValue();
         $money = $spending->getAmount()->getAmount();
-        $type = $spending->getType();
-        $note = $spending->getInfo()->getValue();
         if ($entity) {
             $entity->setPlantation($plantation);
-            $entity->setType($type);
-            $entity->setDate($date);
             $entity->setAmountInCents($money);
-            $entity->setNote($note);
+            $entity->setSpendingGroup($spendingGroup);
+
         } else {
             $entity = new SpendingEntity(
+                $spendingGroup,
                 $plantation,
-                $type,
-                $date,
-                $money,
-                $note
+                $money
             );
-        }
-        if ($work !== null) {
-            $entity->setWork($work);
         }
         return $entity;
     }

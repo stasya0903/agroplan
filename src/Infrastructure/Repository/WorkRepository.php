@@ -10,6 +10,7 @@ use App\Infrastructure\Entity\PlantationEntity;
 use App\Infrastructure\Entity\WorkEntity;
 use App\Infrastructure\Entity\WorkerEntity;
 use App\Infrastructure\Entity\WorkTypeEntity;
+use App\Infrastructure\Mapper\SpendingGroupMapper;
 use App\Infrastructure\Mapper\SpendingMapper;
 use App\Infrastructure\Mapper\WorkerShiftMapper;
 use App\Infrastructure\Mapper\WorkMapper;
@@ -24,7 +25,7 @@ class WorkRepository implements WorkRepositoryInterface
         private readonly EntityManagerInterface $em,
         private readonly WorkMapper $mapper,
         private readonly WorkerShiftMapper $workerShiftMapper,
-        private readonly SpendingMapper $spendingMapper,
+        private readonly SpendingGroupMapper $spendingMapper,
     ) {
     }
 
