@@ -56,7 +56,7 @@ RELEASES=$(ls -dt */ | tail -n +$(($RELEASES_COUNT + 1)))
 if [ -n "$RELEASES" ]; then
   echo "Deleting old releases..."
   for RELEASE in $RELEASES; do
-    rm -rf "$DEPLOY_PATH/$RELEASE"
+    sudo rm -rf "$DEPLOY_PATH/$RELEASE"
   done
 else
   echo "No old releases to delete."
