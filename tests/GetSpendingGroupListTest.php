@@ -166,7 +166,7 @@ class GetSpendingGroupListTest extends WebTestCase
             $fertilization,
             650,
             'new',
-            array_map( fn(Plantation $plantation) => $plantation->getId(), $this->plantations)
+            array_map(fn(Plantation $plantation) => $plantation->getId(), $this->plantations)
         );
         //750
         $this->createSpendingGroup(
@@ -188,8 +188,7 @@ class GetSpendingGroupListTest extends WebTestCase
 
     private function createSpendingGroup(
         string $date,
-        SpendingType
-        $spendingType,
+        SpendingType $spendingType,
         float $amount,
         string $note,
         array $plantationIds

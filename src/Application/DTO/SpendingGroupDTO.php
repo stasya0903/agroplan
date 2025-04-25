@@ -13,8 +13,8 @@ class SpendingGroupDTO
         public int $spendingTypeId,
         public string $spendingTypeName,
         public float $amount,
-        public string $note,
-        public array $spending
+        public ?string $note = null,
+        public ?array $spending = []
     ) {
     }
 }

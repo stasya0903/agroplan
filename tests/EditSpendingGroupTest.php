@@ -1,5 +1,6 @@
 <?php
 
+namespace App\Tests;
 
 use App\Domain\Entity\Spending;
 use App\Domain\Entity\SpendingGroup;
@@ -31,7 +32,7 @@ class EditSpendingGroupTest extends WebTestCase
         $this->plantationFactory = static::getContainer()->get(PlantationFactoryInterface::class);
         $this->plantationRepository = static::getContainer()->get(PlantationRepositoryInterface::class);
         $this->spendingGroupRepository = static::getContainer()->get(SpendingGroupRepositoryInterface::class);
-        $this->truncateTables(['work', 'worker_shift', 'spending', 'spending_group','workers', 'plantations']);
+        $this->truncateTables(['work', 'worker_shift', 'spending', 'spending_group', 'workers', 'plantations']);
         //create plantation
         $plantation = $this->plantationFactory->create(new Name('new Plantation'));
         $this->plantationRepository->save($plantation);
@@ -85,13 +86,13 @@ class EditSpendingGroupTest extends WebTestCase
         $total = array_sum(array_map(fn($s) => $s->getAmount()->getAmount(), $allSpending));
         $this->assertEquals($spendingGroup->getAmount()->getAmount(), $total);
     }
-    
+
     #[Test]
     public function testEditSpendingGroupForWorkType(): void
     {
         $this->exsistingSpendingGroup->setType(SpendingType::WORK);
-        $this->spendingGroupRepository->save( $this->exsistingSpendingGroup);
-       
+        $this->spendingGroupRepository->save($this->exsistingSpendingGroup);
+
         $data = $this->getData();
         $this->client->request(
             'POST',
@@ -107,6 +108,7 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Please edit work for Work spending type.', $content['message']);
     }
+
     public function testChangeToWorkTypeSpending(): void
     {
         $data = $this->getData();
@@ -125,10 +127,10 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Please create work for Work spending type.', $content['message']);
     }
+
     #[Test]
     public function testEditSpendingGroupWithZeroAmount(): void
     {
-
         $data = $this->getData();
         $data['amount'] = 0;
 
@@ -146,10 +148,10 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Amount cannot be empty', $content['message']);
     }
+
     #[Test]
     public function testEditSpendingGroupWithNegativeAmount(): void
     {
-
         $data = $this->getData();
         $data['amount'] = -1;
         $this->client->request(
@@ -166,6 +168,7 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Amount must be greater than zero.', $content['message']);
     }
+
     public function testEditGhostSpendingGroup(): void
     {
         $data = $this->getData();
@@ -184,6 +187,7 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Spending group not found.', $content['message']);
     }
+
     public function testEditWithNoExistingGroupType(): void
     {
         $data = $this->getData();
@@ -202,8 +206,9 @@ class EditSpendingGroupTest extends WebTestCase
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Spending group not found.', $content['message']);
     }
-    
-    public function getData(){
+
+    public function getData(): array
+    {
         return [
             "spendingGroupId" => $this->exsistingSpendingGroup->getId(),
             "amount" => 500,
