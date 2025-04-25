@@ -16,8 +16,6 @@ use App\Domain\ValueObject\Name;
 
 class SpendingGroupFactory implements SpendingGroupFactoryInterface
 {
-
-
     public function create(
         SpendingType $type,
         Date $date,

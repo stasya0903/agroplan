@@ -37,7 +37,8 @@ class SpendingGroupEntity
         targetEntity: SpendingEntity::class,
         mappedBy: 'spendingGroup',
         cascade: ['persist', 'remove'],
-        orphanRemoval: true)]
+        orphanRemoval: true
+    )]
     private ?Collection $spendings;
     #[ORM\Column(type: 'boolean')]
     private ?bool $isShared;
@@ -137,6 +138,4 @@ class SpendingGroupEntity
         $this->isShared = $isShared;
         $this->spendings = $spendings;
     }
-
-
 }

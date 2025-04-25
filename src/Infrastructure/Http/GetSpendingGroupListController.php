@@ -26,10 +26,9 @@ final class GetSpendingGroupListController extends AbstractController
     public function __invoke(
         #[MapRequestPayload] GetSpendingGroupListRequest $request
     ): Response {
-        $response = ($this->useCase)($request);
-        return $this->json($response);
         try {
-
+            $response = ($this->useCase)($request);
+            return $this->json($response);
         } catch (\Throwable $e) {
             $errorResponse = [
                 'message' => $e->getMessage()

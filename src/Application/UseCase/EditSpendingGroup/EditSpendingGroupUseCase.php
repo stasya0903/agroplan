@@ -18,7 +18,6 @@ class EditSpendingGroupUseCase
     public function __construct(
         private readonly SpendingRepository $spendingRepository,
         private readonly SpendingGroupRepository $spendingGroupRepository,
-
     ) {
     }
 
@@ -44,7 +43,7 @@ class EditSpendingGroupUseCase
         $oldAmount = $spendingGroup->getAmount()->getAmount();
         $newAmount = Money::fromFloat($request->amount);
         $allSpendings = $this->spendingRepository->getForGroup($spendingGroup->getId());
-        if($oldAmount !== $newAmount->getAmount()) {
+        if ($oldAmount !== $newAmount->getAmount()) {
             $spendingGroup->setAmount($newAmount);
             $totalAmountInCents = $newAmount->getAmount();
             $plantationCount = count($allSpendings);
@@ -63,14 +62,14 @@ class EditSpendingGroupUseCase
         $spendingGroup->setInfo(new Note($request->note));
         $this->spendingGroupRepository->save($spendingGroup);
         $spendingsDto = [];
-         foreach($allSpendings as $spending) {
-             $spendingsDto[] = new SpendingDTO(
-                 $spending->getId(),
-                 $spending->getPlantation()->getId(),
-                 $spending->getPlantation()->getName()->getValue(),
-                 $spending->getAmount()->getAmountAsFloat(),
-             );
-         }
+        foreach ($allSpendings as $spending) {
+            $spendingsDto[] = new SpendingDTO(
+                $spending->getId(),
+                $spending->getPlantation()->getId(),
+                $spending->getPlantation()->getName()->getValue(),
+                $spending->getAmount()->getAmountAsFloat(),
+            );
+        }
 
         return new EditSpendingGroupResponse(
             new SpendingGroupDTO(

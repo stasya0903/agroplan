@@ -29,7 +29,6 @@ final class SpendingGroupMapper
             new Money($entity->getAmountInCents()),
             new Note($entity->getNote()),
             $entity->getIsShared(),
-
         );
         $reflectionProperty = new \ReflectionProperty(SpendingGroup::class, 'id');
         $reflectionProperty->setAccessible(true);

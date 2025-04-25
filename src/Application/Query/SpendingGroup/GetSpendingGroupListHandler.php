@@ -6,7 +6,6 @@ use App\Application\DTO\SpendingDTO;
 use App\Application\DTO\SpendingGroupDTO;
 use App\Domain\Enums\SpendingType;
 use App\Domain\ValueObject\Money;
-
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
