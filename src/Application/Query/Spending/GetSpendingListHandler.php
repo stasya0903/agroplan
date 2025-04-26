@@ -59,7 +59,7 @@ class GetSpendingListHandler
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
-
+        $sql .= ' ORDER BY sg.date';
         $result = $this->db->fetchAllAssociative($sql, $params, $types);
         return array_map(fn($row) => new SpendingDTO(
             $row['id'],

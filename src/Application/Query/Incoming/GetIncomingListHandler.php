@@ -47,6 +47,7 @@ class GetIncomingListHandler
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
 
+        $sql .= ' ORDER BY i.date';
         $result = $this->db->fetchAllAssociative($sql, $params, $types);
         return array_map(fn($row) => new IncomingDTO(
             $row['id'],

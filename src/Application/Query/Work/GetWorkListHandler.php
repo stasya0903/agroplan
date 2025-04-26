@@ -50,6 +50,7 @@ class GetWorkListHandler
             $params['dateTo'] = $query->getDateTo()->getValue();
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
+        $sql .= ' ORDER BY w.date';
 
         $result = $this->db->fetchAllAssociative($sql, $params, $types);
         $workIds = array_column($result, 'id');
