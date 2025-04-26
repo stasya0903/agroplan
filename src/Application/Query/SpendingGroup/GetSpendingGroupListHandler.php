@@ -69,7 +69,7 @@ class GetSpendingGroupListHandler
             $types['dateTo'] = Types::DATETIME_IMMUTABLE;
         }
 
-
+        $sql .= ' ORDER BY sg.date';
         $groups = $this->db->fetchAllAssociative($sql, $params, $types);
         $spendingGroupIds = array_column($groups, 'id');
 
@@ -86,6 +86,7 @@ class GetSpendingGroupListHandler
             $spendingParams['plantationId'] = $query->getPlantationId();
             $spendingTypes['plantationId'] = Types::STRING;
         }
+
         $spending = $this->db->fetchAllAssociative($spendingSql, $spendingParams, $spendingTypes);
         $spendingByGroup = [];
         foreach ($spending as $s) {
