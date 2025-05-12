@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Http;
+
+use App\Application\UseCase\CreateWorker\CreateWorkerRequest;
+use App\Application\UseCase\CreateWorker\CreateWorkerUseCase;
+use App\Application\UseCase\EditWorker\EditWorkerRequest;
+use App\Application\UseCase\EditWorker\EditWorkerUseCase;
+use App\Application\UseCase\GetList\Chemical\GetChemicalListRequest;
+use App\Application\UseCase\GetList\Chemical\GetChemicalListUseCase;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Response;
+
+#[Route(
+    '/api/v1/chemical/list',
+    name: 'chemical_list',
+    methods: ['POST']
+)]
+final class GetChemicalListController extends AbstractController
+{
+    public function __construct(
+        private readonly GetChemicalListUseCase $useCase
+    ) {
+    }
+
+    public function __invoke(): Response {
+        try {
+            $response = ($this->useCase)();
+            return $this->json($response);
+        } catch (\Throwable $e) {
+            $errorResponse = [
+                'message' => $e->getMessage()
+            ];
+            return $this->json($errorResponse, 400);
+        }
+    }
+}
