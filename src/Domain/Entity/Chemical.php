@@ -38,5 +38,4 @@ class Chemical
     {
         $this->activeIngredient = $activeIngredient;
     }
-
 }

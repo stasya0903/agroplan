@@ -51,5 +51,4 @@ class ChemicalEntity
     {
         $this->activeIngredient = $activeIngredient;
     }
-
 }

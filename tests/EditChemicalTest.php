@@ -1,5 +1,6 @@
 <?php
 
+namespace App\Tests;
 
 use App\Domain\Entity\Chemical;
 use App\Domain\Repository\ChemicalRepositoryInterface;

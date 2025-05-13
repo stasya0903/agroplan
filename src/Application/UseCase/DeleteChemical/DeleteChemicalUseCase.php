@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Application\UseCase\DeleteChemical;
-use App\Domain\Repository\ChemicalRepositoryInterface;
 
+use App\Domain\Repository\ChemicalRepositoryInterface;
 
 class DeleteChemicalUseCase
 {

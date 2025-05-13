@@ -26,7 +26,7 @@ final class ChemicalMapper
     {
         $commercialName = $chemical->getCommercialName()->getValue();
         $activeIngredient = $chemical->getActiveIngredient()?->getValue() ?? null;
-        if($chemicalEntity){
+        if ($chemicalEntity) {
             $chemicalEntity->setCommercialName($commercialName);
             $chemicalEntity->setActiveIngredient($activeIngredient);
         } else {

@@ -1,10 +1,10 @@
 <?php
 
+namespace App\Tests;
 
 use App\Domain\Entity\Chemical;
 use App\Domain\Repository\ChemicalRepositoryInterface;
 use App\Domain\ValueObject\Name;
-use App\Infrastructure\Entity\ChemicalEntity;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;

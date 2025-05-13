@@ -27,7 +27,8 @@ final class GetChemicalListController extends AbstractController
     ) {
     }
 
-    public function __invoke(): Response {
+    public function __invoke(): Response
+    {
         try {
             $response = ($this->useCase)();
             return $this->json($response);

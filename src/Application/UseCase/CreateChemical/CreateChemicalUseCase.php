@@ -31,7 +31,7 @@ class CreateChemicalUseCase
         }
         $chemical = $this->factory->create(
             new Name($request->commercialName),
-            $request->activeIngredient ? new Name($request->activeIngredient): null
+            $request->activeIngredient ? new Name($request->activeIngredient) : null
         );
         $this->repository->save($chemical);
         return new CreateChemicalResponse($chemical->getId());
