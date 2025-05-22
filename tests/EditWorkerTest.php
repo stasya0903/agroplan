@@ -196,7 +196,7 @@ class EditWorkerTest extends WebTestCase
         $plantation = new Plantation(new Name('Plantation'));
         $this->plantationRepository->save($plantation);
         $data = [
-            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "workTypeId" => SystemWorkType::HARVEST->value,
             "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => [$this->existingWorker->getId()],

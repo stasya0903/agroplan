@@ -12,7 +12,8 @@ class WorkDTO
         public string $plantationName,
         public string $date,
         public array $workersInfo,
-        public ?string $note
+        public ?string $note,
+        public ?RecipeDTO $recipe = null
     ) {
     }
 }

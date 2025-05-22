@@ -2,6 +2,8 @@
 
 namespace App\Tests;
 
+use App\Domain\Entity\Chemical;
+use App\Domain\Entity\ProblemType;
 use App\Domain\Entity\Worker;
 use App\Domain\Entity\WorkerShift;
 use App\Domain\Entity\WorkType;
@@ -9,7 +11,10 @@ use App\Domain\Enums\SpendingType;
 use App\Domain\Enums\SystemWorkType;
 use App\Domain\Factory\PlantationFactoryInterface;
 use App\Domain\Factory\WorkerFactoryInterface;
+use App\Domain\Repository\ChemicalRepositoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\ProblemTypeRepositoryInterface;
+use App\Domain\Repository\RecipeRepositoryInterface;
 use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
@@ -40,7 +45,10 @@ class CreateWorkTest extends WebTestCase
         $this->workerShiftRepository = static::getContainer()->get(WorkerShiftRepositoryInterface::class);
         $this->spendingGroupRepository = static::getContainer()->get(SpendingGroupRepositoryInterface::class);
         $this->spendingRepository = static::getContainer()->get(SpendingRepositoryInterface::class);
-        $this->truncateTables(['work', 'worker_shift', 'spending', 'workers']);
+        $this->recipeRepository = static::getContainer()->get(RecipeRepositoryInterface::class);
+        $this->chemicalRepository = static::getContainer()->get(ChemicalRepositoryInterface::class);
+        $this->problemTypeRepository = static::getContainer()->get(ProblemTypeRepositoryInterface::class);
+        $this->truncateTables(['work', 'worker_shift', 'spending', 'workers', 'recipes', 'chemicals', 'problem_types']);
     }
 
     #[Test]
@@ -64,7 +72,7 @@ class CreateWorkTest extends WebTestCase
             $workers[] = $worker;
         }
         $data = [
-            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "workTypeId" => SystemWorkType::HARVEST->value,
             "plantationId" => $plantation->getId(),
             "date" => date('Y-m-d H:m:s'),
             "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
@@ -91,7 +99,10 @@ class CreateWorkTest extends WebTestCase
         foreach ($workerShifts as $shift) {
             /** @var WorkerShift $shift */
             $this->assertEquals($plantation->getId(), $shift->getPlantation()->getId());
-            $this->assertContains($shift->getWorker()->getId()->value, array_map(fn($w) => $w->getId()->value, $workers));
+            $this->assertContains(
+                $shift->getWorker()->getId()->value,
+                array_map(fn($w) => $w->getId()->value, $workers)
+            );
             $this->assertEquals(350.00, $shift->getPayment()->getAmountAsFloat());
             $this->assertNotNull($shift->getWork());
             $this->assertEquals($work->getId(), $shift->getWork()->getId());
@@ -176,5 +187,264 @@ class CreateWorkTest extends WebTestCase
         $content = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('message', $content);
         $this->assertEquals('Work type not found.', $content['message']);
+    }
+
+    #[Test]
+    public function testCreateWorkWithRecipeSuccess(): void
+    {
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        //create two workers
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+        //create chemical
+        $chemical = new Chemical(new Name('new chemical'), new Name('active ingredient'));
+        $this->chemicalRepository->save($chemical);
+
+        //create problem
+        $problem =  new ProblemType(new Name('new problem'));
+        $this->problemTypeRepository->save($problem);
+        $data = [
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "test work",
+            "recipe" => [
+                "chemicalId" => $chemical->getId(),
+                "dosis" => 250,
+                "problemId" => $problem->getId(),
+                "note" => "new"
+            ]
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+        $response = $this->client->getResponse();
+        $response = json_decode($response->getContent(), true);
+
+        $this->assertArrayHasKey('id', $response);
+        $work = $this->repository->find($response['id']);
+        $this->assertNotNull($work);
+
+        $recipe = $this->recipeRepository->findByWork($response['id']);
+        $this->assertEquals($data['recipe']['chemicalId'], $recipe->getChemical()->getId());
+        $this->assertEquals($data['recipe']['problemId'], $recipe->getProblem()->getId());
+    }
+    #[Test]
+    public function testCreateFumigationWorkWithNoRecipe(): void
+    {
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        //create two workers
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+        $data = [
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers)
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Recipe is required for FERTILIZATION work.', $content['message']);
+    }
+
+    #[Test]
+    public function testCreateNoFumigationWorkWithRecipe(): void
+    {
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        //create two workers
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+        //create chemical
+        $chemical = new Chemical(new Name('new chemical'), new Name('active ingredient'));
+        $this->chemicalRepository->save($chemical);
+
+        //create problem
+        $problem =  new ProblemType(new Name('new problem'));
+        $this->problemTypeRepository->save($problem);
+        $data = [
+            "workTypeId" => SystemWorkType::HARVEST->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "test work",
+            "recipe" => [
+                "chemicalId" => $chemical->getId(),
+                "dosis" => 250,
+                "problemId" => $problem->getId(),
+                "note" => "new"
+            ]
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Recipe can be added only for FERTILIZATION work.', $content['message']);
+    }
+    #[Test]
+    public function testCreateWorkWithRecipeNoChemical(): void
+    {
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        //create two workers
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+
+        //create problem
+        $problem =  new ProblemType(new Name('new problem'));
+        $this->problemTypeRepository->save($problem);
+        $data = [
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "test work",
+            "recipe" => [
+                "chemicalId" => 999,
+                "dosis" => 250,
+                "problemId" => $problem->getId(),
+                "note" => "new"
+            ]
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Chemical not found.', $content['message']);
+    }
+
+    #[Test]
+    public function testCreateWorkWithRecipeNoProblemType(): void
+    {
+        //create plantation
+        $plantation = $this->plantationFactory->create(new Name('new Plantation'));
+        $this->plantationRepository->save($plantation);
+        //create two workers
+        $workers = [];
+        $workersInfo = [
+            ['name' => 'Worker1', 'dailyRate' => 350.00],
+            ['name' => 'Worker2', 'dailyRate' => 350.00]
+        ];
+        foreach ($workersInfo as $info) {
+            $worker = $this->workerFactory->create(
+                new Name($info['name']),
+                Money::fromFloat($info['dailyRate'])
+            );
+            $this->workerRepository->save($worker);
+            $workers[] = $worker;
+        }
+        //create chemical
+        $chemical = new Chemical(new Name('new chemical'), new Name('active ingredient'));
+        $this->chemicalRepository->save($chemical);
+
+        $data = [
+            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "plantationId" => $plantation->getId(),
+            "date" => date('Y-m-d H:m:s'),
+            "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
+            "note" => "test work",
+            "recipe" => [
+                "chemicalId" => $chemical->getId(),
+                "dosis" => 250,
+                "problemId" => 999,
+                "note" => "new"
+            ]
+        ];
+        $this->client->request(
+            'POST',
+            '/api/v1/work/add',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($data)
+        );
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = $this->client->getResponse();
+        $content = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('message', $content);
+        $this->assertEquals('Problem not found.', $content['message']);
     }
 }

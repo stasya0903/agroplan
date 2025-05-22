@@ -197,7 +197,7 @@ class GetWorkerShiftListTest extends WebTestCase
         array $workers
     ): void {
         $data = [
-            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "workTypeId" => SystemWorkType::HARVEST->value,
             "plantationId" => $plantation->getId(),
             "date" => $date,
             "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),

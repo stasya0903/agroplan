@@ -86,7 +86,7 @@ class WorkRepository implements WorkRepositoryInterface
         return $works;
     }
 
-    public function findWithShiftsAndSpending(int $id): ?Work
+    public function findWithAllData(int $id): ?Work
     {
         $entity = $this->em->createQueryBuilder()
             ->select('w')

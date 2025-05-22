@@ -3,6 +3,7 @@
 namespace App\Domain\Factory;
 
 use App\Domain\Entity\Plantation;
+use App\Domain\Entity\Recipe;
 use App\Domain\Entity\Work;
 use App\Domain\Entity\WorkType;
 use App\Domain\ValueObject\Date;
@@ -16,6 +17,7 @@ interface WorkFactoryInterface
         Plantation $plantation,
         Date $date,
         array $workerIds,
-        Note $note
+        Note $note,
+        ?Recipe $recipe = null
     ): Work;
 }
