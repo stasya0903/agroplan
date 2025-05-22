@@ -60,7 +60,7 @@ class EditWorkerShiftTest extends WebTestCase
         $workerShift = $this->workerShiftRepository->find($shift->getId());
         $this->assertEquals($workerShift->getPayment()->getAmountAsFloat(), $data['payment']);
         $this->assertTrue($workerShift->isPaid());
-        $work = $this->repository->findWithShiftsAndSpending($shift->getWork()->getId());
+        $work = $this->repository->findWithAllData($shift->getWork()->getId());
         $shifts = $work->getWorkerShifts();
         $cost = array_reduce($shifts, function ($result, $item) {
             $result += $item->getPayment()->getAmount();
@@ -111,7 +111,7 @@ class EditWorkerShiftTest extends WebTestCase
         array $workers
     ): void {
         $data = [
-            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "workTypeId" => SystemWorkType::HARVEST->value,
             "plantationId" => $plantation->getId(),
             "date" => $date,
             "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
@@ -128,6 +128,6 @@ class EditWorkerShiftTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true);
-        $this->existingWork = $this->repository->findWithShiftsAndSpending($data['id']);
+        $this->existingWork = $this->repository->findWithAllData($data['id']);
     }
 }

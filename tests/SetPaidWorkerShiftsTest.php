@@ -119,7 +119,7 @@ class SetPaidWorkerShiftsTest extends WebTestCase
         array $workers
     ): void {
         $data = [
-            "workTypeId" => SystemWorkType::FERTILIZATION->value,
+            "workTypeId" => SystemWorkType::HARVEST->value,
             "plantationId" => $plantation->getId(),
             "date" => $date,
             "workerIds" => array_map(fn($worker) => $worker->getId(), $workers),
@@ -136,6 +136,7 @@ class SetPaidWorkerShiftsTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $response = $this->client->getResponse();
         $data = json_decode($response->getContent(), true);
-        $this->existingWork = $this->repository->findWithShiftsAndSpending($data['id']);
+        $this->existingWork = $this->repository->findWithAllData($data['id']);
+
     }
 }

@@ -19,7 +19,8 @@ class Work
         private Plantation $plantation,
         private Date $date,
         private array $workers,
-        private Note $note
+        private Note $note,
+        private ?Recipe $recipe = null,
     ) {
         $this->validate();
     }
@@ -127,5 +128,15 @@ class Work
     public function getSpendingGroup(): ?SpendingGroup
     {
         return $this->spendingGroup;
+    }
+
+    public function getRecipe(): ?Recipe
+    {
+        return $this->recipe;
+    }
+
+    public function setRecipe(?Recipe $recipe): void
+    {
+        $this->recipe = $recipe;
     }
 }

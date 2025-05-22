@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Application\Query\Work;
+namespace App\Application\Query\ProblemType;
 
-use App\Application\DTO\RecipeDTO;
 use App\Application\DTO\WorkDTO;
 use App\Application\DTO\WorkerDTO;
+use App\Application\Query\Work\GetWorkListQuery;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Types;
 
-class GetWorkListHandler
+class GetProblemTypeListHandler
 {
     public function __construct(private readonly Connection $db)
     {
@@ -21,15 +21,10 @@ class GetWorkListHandler
      */
     public function handle(GetWorkListQuery $query): array
     {
-        $sql = 'SELECT 
-                w.id, w.date, w.note, w.plantation_id, w.work_type_id, 
-                pl.name as plantation_name, 
-                wt.name as work_type_name,
-                r.id as recipe_id, r.chemical_id, r.problem_id, r.dosis_in_ml, r.note
+        $sql = 'SELECT w.id, w.date, w.note, w.plantation_id, w.work_type_id, pl.name as plantation_name, wt.name as work_type_name 
                 FROM work w 
                 LEFT JOIN plantations pl ON w.plantation_id = pl.id 
-                LEFT JOIN work_types wt ON w.work_type_id = wt.id
-                LEFT JOIN recipes r ON w.id = r.work_id';
+                LEFT JOIN work_types wt ON w.work_type_id = wt.id';
         $params = [];
         $types = [];
 
@@ -80,50 +75,15 @@ class GetWorkListHandler
                 $row['daily_rate_in_cents']
             );
         }
-        $chemicalIds = array_column($result, 'chemical_id');
-        $chemicalsSql = 'SELECT * FROM chemicals WHERE id IN (?)';
-        $chemicals = $this->db->fetchAllAssociative(
-            $chemicalsSql,
-            [$chemicalIds],
-            [ArrayParameterType::INTEGER]
-        );
-        $chemicalNames = array_column($chemicals, 'commercial_name', 'id');
-        $chemicalActiveIngredients = array_column($chemicals, 'active_ingredient', 'id');
-        $problemIds = array_column($result, 'problem_id');
-        $problemSql = 'SELECT * FROM problem_types WHERE id IN (?)';
-        $problems = $this->db->fetchAllAssociative(
-            $problemSql,
-            [$problemIds],
-            [ArrayParameterType::INTEGER]
-        );
-        $problemNames = array_column($problems, 'name', 'id');
-
-        return array_map(function ($row) use ($problemNames, $chemicalActiveIngredients, $chemicalNames, $workersByWorkId) {
-            $recipe = null;
-            if ($row['recipe_id']) {
-                $recipe = new RecipeDTO(
-                    $row['recipe_id'],
-                    $row['chemical_id'],
-                    $chemicalNames[$row['chemical_id']] ?? '',
-                    $chemicalActiveIngredients[$row['chemical_id']] ?? '',
-                    $row['problem_id'],
-                    $problemNames[$row['problem_id']] ?? '',
-                    $row['dosis_in_ml'],
-                    $row['note'] ?? null,
-                );
-            }
-
-            return new WorkDTO(
-                $row['id'],
-                $row['work_type_id'],
-                $row['work_type_name'],
-                $row['plantation_id'],
-                $row['plantation_name'],
-                $row['date'],
-                $workersByWorkId[$row['id']] ?? [],
-                $row['note'],
-                $recipe
-            );
-        }, $result);
+        return array_map(fn($row) => new WorkDTO(
+            $row['id'],
+            $row['work_type_id'],
+            $row['work_type_name'],
+            $row['plantation_id'],
+            $row['plantation_name'],
+            $row['date'],
+            $workersByWorkId[$row['id']] ?? [],
+            $row['note'],
+        ), $result);
     }
 }

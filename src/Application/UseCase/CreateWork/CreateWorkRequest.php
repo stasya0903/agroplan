@@ -9,7 +9,8 @@ class CreateWorkRequest
         public int $plantationId,
         public string $date,
         public array $workerIds,
-        public ?string $note
+        public ?string $note,
+        public  ?RecipeRequest $recipe
     ) {
     }
 }

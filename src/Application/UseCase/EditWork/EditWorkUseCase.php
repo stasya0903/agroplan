@@ -2,15 +2,22 @@
 
 namespace App\Application\UseCase\EditWork;
 
+use App\Application\DTO\RecipeDTO;
 use App\Application\DTO\WorkDTO;
 use App\Application\DTO\WorkerDTO;
 use App\Application\Shared\TransactionalSessionInterface;
+use App\Domain\Entity\Recipe;
 use App\Domain\Entity\Work;
 use App\Domain\Enums\SpendingType;
+use App\Domain\Enums\SystemWorkType;
+use App\Domain\Factory\RecipeFactoryInterface;
 use App\Domain\Factory\SpendingFactoryInterface;
 use App\Domain\Factory\SpendingGroupFactoryInterface;
 use App\Domain\Factory\WorkerShiftFactoryInterface;
+use App\Domain\Repository\ChemicalRepositoryInterface;
 use App\Domain\Repository\PlantationRepositoryInterface;
+use App\Domain\Repository\ProblemTypeRepositoryInterface;
+use App\Domain\Repository\RecipeRepositoryInterface;
 use App\Domain\Repository\SpendingGroupRepositoryInterface;
 use App\Domain\Repository\SpendingRepositoryInterface;
 use App\Domain\Repository\WorkerRepositoryInterface;
@@ -20,6 +27,7 @@ use App\Domain\Repository\WorkTypeRepositoryInterface;
 use App\Domain\ValueObject\Date;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Note;
+use App\Domain\ValueObject\Volume;
 
 class EditWorkUseCase
 {
@@ -34,13 +42,17 @@ class EditWorkUseCase
         private readonly SpendingGroupFactoryInterface $spendingGroupFactory,
         private readonly TransactionalSessionInterface $transaction,
         private readonly SpendingRepositoryInterface $spendingRepository,
-        private readonly SpendingFactoryInterface $spendingFactory
+        private readonly SpendingFactoryInterface $spendingFactory,
+        private readonly ProblemTypeRepositoryInterface $problemRepository,
+        private readonly ChemicalRepositoryInterface $chemicalRepository,
+        private readonly RecipeRepositoryInterface $recipeRepository,
+        private readonly RecipeFactoryInterface $recipeFactory,
     ) {
     }
 
     public function __invoke(EditWorkRequest $request): EditWorkResponse
     {
-        $work = $this->repository->findWithShiftsAndSpending($request->workId);
+        $work = $this->repository->findWithAllData($request->workId);
 
         if (!$work) {
             throw new \DomainException('Work not found.');
@@ -53,6 +65,35 @@ class EditWorkUseCase
         if (!$plantation) {
             throw new \DomainException('Plantation not found.');
         }
+        if ($workType->getId() !== SystemWorkType::FERTILIZATION->value && $request->recipe) {
+            throw new \DomainException('Recipe can be added only for FERTILIZATION work.');
+        }
+        $recipe = null;
+        if ($workType->getId() === SystemWorkType::FERTILIZATION->value) {
+            if (empty($request->recipe)) {
+                throw new \DomainException('Recipe is required for FERTILIZATION work.');
+            }
+            $recipeItem = $request->recipe;
+            $chemical = $this->chemicalRepository->find($recipeItem->chemicalId);
+            if (!$chemical) {
+                throw new \DomainException('Chemical not found.');
+            }
+
+            $problem = null;
+            if ($recipeItem->problemId) {
+                $problem = $this->problemRepository->find($recipeItem->problemId);
+                if (!$problem) {
+                    throw new \DomainException('Problem not found.');
+                }
+            }
+
+            $recipe = $this->recipeFactory->create(
+                $chemical,
+                new Volume($recipeItem->dosis),
+                $problem,
+                $recipeItem->note
+            );
+        }
 
         $workers = [];
         $workerIds = $request->workerIds;
@@ -64,7 +105,7 @@ class EditWorkUseCase
                 $workers[] = $worker;
             }
         }
-        return $this->transaction->run(function () use ($work, $workers, $plantation, $workType, $request) {
+        return $this->transaction->run(function () use ($recipe, $work, $workers, $plantation, $workType, $request) {
             $date = new Date($request->date);
 
             $work->setWorkType($workType);
@@ -74,6 +115,7 @@ class EditWorkUseCase
             $work->setNote(new Note($request->note));
             $this->repository->save($work);
 
+            $this->updateRecipe($work, $recipe);
             $this->updateWorkerShifts($work);
             $this->updateSpendingForWork($work);
             $workersDto = [];
@@ -85,6 +127,19 @@ class EditWorkUseCase
                     $worker->getDailyRate()->getAmountAsFloat()
                 );
             }
+            $actualRecipe = $work->getRecipe();
+            $recipeDto = $actualRecipe
+                ? new RecipeDTO(
+                    $actualRecipe->getId(),
+                    $actualRecipe->getChemical()->getId(),
+                    $actualRecipe->getChemical()->getCommercialName()->getValue(),
+                    $actualRecipe->getChemical()->getActiveIngredient()->getValue(),
+                    $actualRecipe->getProblem()?->getId(),
+                    $actualRecipe->getProblem()?->getName()->getValue(),
+                    $actualRecipe->getDosis()->getMl(),
+                    $actualRecipe->getNote()
+                )
+                : null;
             return new EditWorkResponse(
                 new WorkDto(
                     $work->getId(),
@@ -94,7 +149,8 @@ class EditWorkUseCase
                     $work->getPlantation()->getName()->getValue(),
                     $work->getDate(),
                     $workersDto,
-                    $work->getNote()->getValue()
+                    $work->getNote()->getValue(),
+                    $recipeDto
                 )
             );
         });
@@ -168,6 +224,32 @@ class EditWorkUseCase
                 $this->spendingRepository->deleteForGroup($spendingGroup->getId());
                 $this->spendingGroupRepository->delete($spendingGroup->getId());
             }
+        }
+    }
+
+    private function updateRecipe(Work $work, ?Recipe $newRecipe): void
+    {
+        $existingRecipe = $work->getRecipe();
+        if (!$newRecipe) {
+            if ($existingRecipe) {
+                $this->recipeRepository->delete($existingRecipe->getId());
+            }
+            return;
+        }
+
+        if ($existingRecipe) {
+            if ($existingRecipe->equals($newRecipe)) {
+                return;
+            }
+            $existingRecipe->setChemical($newRecipe->getChemical());
+            $existingRecipe->setProblem($newRecipe->getProblem());
+            $existingRecipe->setDosis($newRecipe->getDosis());
+            $existingRecipe->setNote($newRecipe->getNote());
+            $this->recipeRepository->save($existingRecipe);
+        } else {
+            $newRecipe->assignWork($work);
+            $this->recipeRepository->save($newRecipe);
+            $work->setRecipe($newRecipe);
         }
     }
 }
