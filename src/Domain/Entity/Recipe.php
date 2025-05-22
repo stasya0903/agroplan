@@ -19,7 +19,6 @@ class Recipe
         private ?ProblemType $problem,
         private ?string $note
     ) {
-
     }
 
     public function getChemical(): Chemical
@@ -66,14 +65,17 @@ class Recipe
     {
         $this->work = $work;
     }
+
     public function getWork(): ?Work
     {
         return $this->work;
     }
+
     public function getId(): ?int
     {
         return $this->id;
     }
+
     public function equals(Recipe $other): bool
     {
         return $this->getChemical()?->getId() === $other->getChemical()?->getId()

@@ -37,9 +37,7 @@ class RecipeEntity
         WorkEntity $work,
         ?ProblemTypeEntity $problem = null,
         ?string $note = null,
-
-    )
-    {
+    ) {
         $this->chemical = $chemical;
         $this->problem = $problem;
         $this->dosisInMl = $dosisInMl;

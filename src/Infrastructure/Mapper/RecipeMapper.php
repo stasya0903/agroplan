@@ -43,8 +43,7 @@ final class RecipeMapper
         ?ProblemTypeEntity $problem = null,
         WorkEntity $work = null,
         ?RecipeEntity $recipeEntity = null
-    ): RecipeEntity
-    {
+    ): RecipeEntity {
         $dosis = $recipe->getDosis()->getMl();
         $note = $recipe->getNote();
 

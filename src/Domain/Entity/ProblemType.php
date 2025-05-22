@@ -27,5 +27,4 @@ class ProblemType
     {
         $this->name = $newName;
     }
-
 }

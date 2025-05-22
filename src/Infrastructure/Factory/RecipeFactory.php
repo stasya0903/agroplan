@@ -11,7 +11,6 @@ use App\Domain\ValueObject\Volume;
 
 class RecipeFactory implements RecipeFactoryInterface
 {
-
     public function create(Chemical $chemical, Volume $dosis, ?ProblemType $problem, ?string $note): Recipe
     {
         return new Recipe($chemical, $dosis, $problem, $note);

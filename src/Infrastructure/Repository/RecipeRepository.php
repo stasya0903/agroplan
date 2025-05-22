@@ -44,8 +44,7 @@ class RecipeRepository implements RecipeRepositoryInterface
         $problem = $recipe->getProblem()
             ? $this->em->getReference(ProblemTypeEntity::class, $recipe->getProblem()->getId())
             : null;
-        ;
-        $entity = $this->mapper->mapToEntity($recipe, $chemical, $problem, $workEntity,$existing);
+        $entity = $this->mapper->mapToEntity($recipe, $chemical, $problem, $workEntity, $existing);
 
         $this->em->persist($entity);
         $this->em->flush();
@@ -64,7 +63,7 @@ class RecipeRepository implements RecipeRepositoryInterface
                 ->andWhere('recipe.id IN (:ids)')
                 ->setParameter('ids', $ids);
         }
-        $items =  $query->getQuery()->getResult();
+        $items = $query->getQuery()->getResult();
         $recipes = [];
         foreach ($items as $item) {
             $recipes[] = $this->mapper->mapToDomain($item);

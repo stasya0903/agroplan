@@ -6,7 +6,7 @@ use App\Domain\ValueObject\Date;
 
 class GetProblemTypeListQuery
 {
-    public function __construct(
-    ) {
+    public function __construct()
+    {
     }
 }

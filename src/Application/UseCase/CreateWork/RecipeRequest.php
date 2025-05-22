@@ -11,5 +11,4 @@ class RecipeRequest
         public ?string $note
     ) {
     }
-
 }
